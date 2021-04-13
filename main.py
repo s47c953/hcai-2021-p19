@@ -38,6 +38,21 @@ class MyView:
                                  width=self.btn_width,
                                  command=lambda: self.plot("sell", "time"))
 
+        self.btnAddValue = tk.Button(master=self.containerInput,
+                                 text="Add",
+                                 width=self.btn_width,
+                                 command=self.addUserInputData)
+
+        self.gridInput = tk.Frame(master=self.containerInput)
+        self.txtInputX = tk.Label(master=self.gridInput, text="X")
+        self.txtInputY = tk.Label(master=self.gridInput, text="Y")
+        self.entInputX = tk.Entry(master=self.gridInput, width=6)
+        self.entInputY = tk.Entry(master=self.gridInput, width=6)
+        self.txtInputX.grid(row=0, column=0)
+        self.txtInputY.grid(row=1, column=0)
+        self.entInputX.grid(row=0, column=1)
+        self.entInputY.grid(row=1, column=1)
+
         self.gridExtremes = tk.Frame(master=self.containerInput)
 
         self.txtExtremesX = tk.Label(master=self.gridExtremes, text="X")
@@ -84,6 +99,9 @@ class MyView:
         tk.Label(self.gridExtremes, text="Aggregation Function").grid(row=4, column=1)
         self.aggregationPopup.grid(row=5, column=1)
 
+        self.gridInput.pack(fill=tk.X, anchor=tk.NW)
+        self.btnAddValue.pack()
+
         # Plot
         self.containerPlot = tk.Frame(master=self.root)
         self.containerPlot.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
@@ -98,6 +116,12 @@ class MyView:
 
         self.canvasPlot = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.figurePlot, master=self.containerPlot)
         self.canvasPlot.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+    def addUserInputData(self):
+        x = float(self.entInputX.get())
+        y = float(self.entInputY.get())
+        self.data.append({"sell": x, "time": y})
+
 
     def plot(self, x_key: str, y_key: str):
 
