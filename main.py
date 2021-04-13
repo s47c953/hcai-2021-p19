@@ -1,6 +1,8 @@
 import sys
 import tkinter.filedialog as tkFile
 import tkinter as tk
+
+import numpy
 import numpy as np
 import matplotlib.figure
 import matplotlib.backends.backend_tkagg
@@ -25,37 +27,48 @@ class MyView:
         self.containerInput = tk.Frame(master=self.root, width=150)
 
         self.txtFileName = tk.Label(master=self.containerInput, text="File Name")
-        self.txtMinX = tk.Label(master=self.containerInput, text="Min X")
-        self.txtMaxX = tk.Label(master=self.containerInput, text="Max X")
-        self.txtMinY = tk.Label(master=self.containerInput, text="Min Y")
-        self.txtMaxY = tk.Label(master=self.containerInput, text="Max Y")
 
         self.btnLoadFile = tk.Button(master=self.containerInput,
                                      text="Load File",
                                      width=self.btn_width,
                                      command=self.open_file)
+
         self.btnPlot = tk.Button(master=self.containerInput,
                                  text="Plot",
                                  width=self.btn_width,
                                  command=lambda: self.plot("sell", "time"))
 
-        self.entMinX = tk.Entry(master=self.containerInput)
-        self.entMaxX = tk.Entry(master=self.containerInput)
-        self.entMinY = tk.Entry(master=self.containerInput)
-        self.entMaxY = tk.Entry(master=self.containerInput)
+        self.gridExtremes = tk.Frame(master=self.containerInput)
+
+        self.txtExtremesX = tk.Label(master=self.gridExtremes, text="X")
+        self.txtExtremesY = tk.Label(master=self.gridExtremes, text="Y")
+        self.txtMinX = tk.Label(master=self.gridExtremes, text="Min")
+        self.txtMaxX = tk.Label(master=self.gridExtremes, text="Max")
+        self.txtMinY = tk.Label(master=self.gridExtremes, text="Min")
+        self.txtMaxY = tk.Label(master=self.gridExtremes, text="Max")
+
+        self.entMinX = tk.Entry(master=self.gridExtremes, width=6)
+        self.entMinY = tk.Entry(master=self.gridExtremes, width=6)
+        self.entMaxY = tk.Entry(master=self.gridExtremes, width=6)
+        self.entMaxX = tk.Entry(master=self.gridExtremes, width=6)
+
+        self.txtExtremesX.grid(row=1, column=0)
+        self.txtMinX.grid(row=0, column=1)
+        self.txtMaxX.grid(row=0, column=2)
+        self.entMinX.grid(row=1, column=1)
+        self.entMaxX.grid(row=1, column=2)
+
+        self.txtExtremesY.grid(row=3, column=0)
+        self.txtMinY.grid(row=2, column=1)
+        self.txtMaxY.grid(row=2, column=2)
+        self.entMinY.grid(row=3, column=1)
+        self.entMaxY.grid(row=3, column=2)
 
         self.btnLoadFile.pack()
         self.txtFileName.pack()
         self.btnPlot.pack()
 
-        self.txtMinX.pack()
-        self.entMinX.pack()
-        self.txtMaxX.pack()
-        self.entMaxX.pack()
-        self.txtMinY.pack()
-        self.entMinY.pack()
-        self.txtMaxY.pack()
-        self.entMaxY.pack()
+        self.gridExtremes.pack(fill=tk.X, anchor=tk.NW)
 
         self.containerInput.pack(fill=tk.Y, side=tk.LEFT)
         self.containerInput.pack_propagate(0)
@@ -69,6 +82,8 @@ class MyView:
 
         self.figurePlot = matplotlib.figure.Figure(figsize=(5, 4), dpi=100)
         self.targetSubPlot = self.figurePlot.add_subplot(111)
+        self.targetSubPlot.set_xticks(numpy.arange(0, 1.1, 0.1))
+        self.targetSubPlot.set_yticks(numpy.arange(0, 1.1, 0.1))
 
         self.canvasPlot = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.figurePlot, master=self.containerPlot)
         self.canvasPlot.get_tk_widget().pack(fill=tk.BOTH, expand=True)
