@@ -42,6 +42,7 @@ class MyView:
 
         self.txtExtremesX = tk.Label(master=self.gridExtremes, text="X")
         self.txtExtremesY = tk.Label(master=self.gridExtremes, text="Y")
+
         self.txtMinX = tk.Label(master=self.gridExtremes, text="Min")
         self.txtMaxX = tk.Label(master=self.gridExtremes, text="Max")
         self.txtMinY = tk.Label(master=self.gridExtremes, text="Min")
