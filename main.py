@@ -6,29 +6,65 @@ import matplotlib.figure
 import matplotlib.backends.backend_tkagg
 import os.path as path
 
+import AggregationFunction
+
 
 # Trash code
 class MyView:
+
+    btn_width = 10
 
     def __init__(self):
         self.data = []
 
         self.root = tk.Tk()
+        self.root.title("Project 19")
+        self.root.geometry("600x400")
+
         # Input
-        self.containerInput = tk.Frame(master=self.root, bg="blue")
-        self.containerInput.pack(fill=tk.BOTH, side=tk.LEFT)
+        self.containerInput = tk.Frame(master=self.root, width=150)
 
-        self.p = tk.Label(master=self.containerInput, text="hello motherfucker")
-        self.p.pack()
+        self.txtFileName = tk.Label(master=self.containerInput, text="File Name")
+        self.txtMinX = tk.Label(master=self.containerInput, text="Min X")
+        self.txtMaxX = tk.Label(master=self.containerInput, text="Max X")
+        self.txtMinY = tk.Label(master=self.containerInput, text="Min Y")
+        self.txtMaxY = tk.Label(master=self.containerInput, text="Max Y")
 
-        self.btnPlot = tk.Button(master=self.containerInput, text="Plot", command=lambda: self.plot("sell", "time", extreme_x={"min": 400, "max": 600}, extreme_y={"min": 8, "max": 12}, inverse_y=True))
+        self.btnLoadFile = tk.Button(master=self.containerInput,
+                                     text="Load File",
+                                     width=self.btn_width,
+                                     command=self.open_file)
+        self.btnPlot = tk.Button(master=self.containerInput,
+                                 text="Plot",
+                                 width=self.btn_width,
+                                 command=lambda: self.plot("sell", "time"))
+
+        self.entMinX = tk.Entry(master=self.containerInput)
+        self.entMaxX = tk.Entry(master=self.containerInput)
+        self.entMinY = tk.Entry(master=self.containerInput)
+        self.entMaxY = tk.Entry(master=self.containerInput)
+
+        self.btnLoadFile.pack()
+        self.txtFileName.pack()
         self.btnPlot.pack()
 
+        self.txtMinX.pack()
+        self.entMinX.pack()
+        self.txtMaxX.pack()
+        self.entMaxX.pack()
+        self.txtMinY.pack()
+        self.entMinY.pack()
+        self.txtMaxY.pack()
+        self.entMaxY.pack()
+
+        self.containerInput.pack(fill=tk.Y, side=tk.LEFT)
+        self.containerInput.pack_propagate(0)
+
         # Plot
-        self.containerPlot = tk.Frame(master=self.root, bg="red")
+        self.containerPlot = tk.Frame(master=self.root)
         self.containerPlot.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
-        self.i = tk.Label(master=self.containerPlot, text="Plot shit here")
+        self.i = tk.Label(master=self.containerPlot, text="The Plot:")
         self.i.pack()
 
         self.figurePlot = matplotlib.figure.Figure(figsize=(5, 4), dpi=100)
@@ -37,11 +73,22 @@ class MyView:
         self.canvasPlot = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.figurePlot, master=self.containerPlot)
         self.canvasPlot.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
-        self.open_file()
-
-    def plot(self, x_key: str, y_key: str, extreme_x={}, extreme_y={}, inverse_x=False, inverse_y=False):
+    def plot(self, x_key: str, y_key: str):
 
         plot_targets = []
+
+        # TODO: get from UI
+        extreme_x_min = 400
+        extreme_x_max = 600
+        extreme_y_min = 8
+        extreme_y_max = 12
+
+        # TODO: get from UI
+        inverse_x = False
+        inverse_y = True
+
+        # TODO: get from wherever
+        aggregation_function = AggregationFunction.LukasiewiczAggregationFunction
 
         min_x = sys.float_info.max
         max_x = sys.float_info.min
@@ -63,39 +110,62 @@ class MyView:
             elif y < min_y:
                 min_y = y
 
-        if max_x > extreme_x["max"]:
-            max_x = extreme_x["max"]
-        if min_x < extreme_x["min"]:
-            min_x = extreme_x["min"]
-        if max_y > extreme_y["max"]:
-            max_y = extreme_y["max"]
-        if min_y < extreme_y["min"]:
-            min_y = extreme_y["min"]
+        # set boundaries from extreme values
+        if max_x > extreme_x_max:
+            max_x = extreme_x_max
+        if min_x < extreme_x_min:
+            min_x = extreme_x_min
+        if max_y > extreme_y_max:
+            max_y = extreme_y_max
+        if min_y < extreme_y_min:
+            min_y = extreme_y_min
 
         # apply min_max_normalization
         for val in self.data:
+            # get x values ensure value is within boundaries
             x_val = val[x_key]
-            if x_val > extreme_x["max"]:
-                x_val = extreme_x["max"]
-            elif x_val < extreme_x["min"]:
-                x_val = extreme_x["min"]
+            if x_val > extreme_x_max:
+                x_val = extreme_x_max
+            elif x_val < extreme_x_min:
+                x_val = extreme_x_min
 
+            # get y values ensure value is within boundaries
             y_val = val[y_key]
-            if y_val > extreme_y["max"]:
-                y_val = extreme_y["max"]
-            elif y_val < extreme_y["min"]:
-                y_val = extreme_y["min"]
+            if y_val > extreme_y_max:
+                y_val = extreme_y_max
+            elif y_val < extreme_y_min:
+                y_val = extreme_y_min
 
+            # apply min max normalization
             target_x = (x_val - min_x)/(max_x - min_x)
             target_y = (y_val - min_y)/(max_y - min_y)
 
+            # inverse for plot if necessary
             if inverse_x:
                 target_x = 1 - target_x
             if inverse_y:
                 target_y = 1 - target_y
 
-            plot_targets.append({"x": target_x, "y": target_y})
-            self.targetSubPlot.scatter(target_x, target_y)
+
+            # get value from aggregation function
+            point_value = aggregation_function.perform(target_x, target_y)
+
+            color: str
+            if point_value == 0:
+                color = "red"
+            elif point_value == 1:
+                color = "green"
+            else:
+                color = "gray"
+
+            annot = plot_targets.append({"x": target_x, "y": target_y, "val": point_value})
+            self.targetSubPlot.scatter(target_x, target_y, color=color)
+            self.targetSubPlot.annotate("", xy=(0, 0), xytext=(20, 20), textcoords="offset points",
+                     bbox=dict(boxstyle="round", fc="w"),
+                     arrowprops=dict(arrowstyle="->"))
+            annot.set_visible(False)
+
+
 
         self.targetSubPlot.set_xlim(0, 1)
         self.targetSubPlot.set_ylim(0, 1)
@@ -119,11 +189,11 @@ class MyView:
         )
 
         if not filepath:
-            self.p.config(text="File not found!")
+            self.txtFileName.config(text="File not found!")
             return False
 
         # self.p.config(text=path.basename(filepath))
-        self.p["text"] = path.basename(filepath)
+        self.txtFileName["text"] = "File Name: " + path.basename(filepath)
 
         with open(filepath, "r") as input_file:
             file = input_file.readlines()

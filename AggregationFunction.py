@@ -18,11 +18,11 @@ class LukasiewiczAggregationFunction(AggregationFunction):
 
     @staticmethod
     def _yesFunction(x: float, y: float) -> float:
-        return min(1.0, x-y-0.5)
+        return min(1.0, x+y-0.5)
 
     @staticmethod
     def _noFunction(x: float, y: float) -> float:
-        return max(1.0, x-y-0.5)
+        return max(0, x+y-0.5)
 
     @staticmethod
     def _maybeFunction(x: float, y: float) -> float:
@@ -33,7 +33,7 @@ class LukasiewiczAggregationFunction(AggregationFunction):
         elif val > 1:
             return 1.0
         else:
-            return 0
+            return val
 
 
 class MinMaxAggregationFunction(AggregationFunction):
