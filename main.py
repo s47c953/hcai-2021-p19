@@ -1,4 +1,5 @@
 import sys
+import tkinter
 import tkinter.filedialog as tkFile
 import tkinter as tk
 
@@ -38,6 +39,11 @@ class MyView:
                                  width=self.btn_width,
                                  command=lambda: self.plot("sell", "time"))
 
+        self.invertX = tkinter.BooleanVar()
+        self.cbInvertX = tk.Checkbutton(master=self.containerInput, text="X Inverted", variable=self.invertX)
+        self.invertY = tkinter.BooleanVar()
+        self.cbInvertY = tk.Checkbutton(master=self.containerInput, text="Y Inverted", variable=self.invertY)
+
         self.gridExtremes = tk.Frame(master=self.containerInput)
 
         self.txtExtremesX = tk.Label(master=self.gridExtremes, text="X")
@@ -53,17 +59,26 @@ class MyView:
         self.entMaxY = tk.Entry(master=self.gridExtremes, width=6)
         self.entMaxX = tk.Entry(master=self.gridExtremes, width=6)
 
+        # Create a Tkinter variable
+        self.aggregationPopupValue = tk.StringVar(self.containerInput)
+        # Dictionary with options
+        choices = {'Lukasiewicz', 'MinMax', 'TnormTconorm'}
+        self.aggregationPopupValue.set('Lukasiewicz')  # set the default option
+
+        self.aggregationPopup = tk.OptionMenu(self.containerInput, self.aggregationPopupValue, *choices)
+        txtAggregationLabel = tk.Label(master=self.containerInput, text="Aggregation Function")
+
         self.txtExtremesX.grid(row=1, column=0)
         self.txtMinX.grid(row=0, column=1)
         self.txtMaxX.grid(row=0, column=2)
         self.entMinX.grid(row=1, column=1)
         self.entMaxX.grid(row=1, column=2)
 
-        self.txtExtremesY.grid(row=3, column=0)
-        self.txtMinY.grid(row=2, column=1)
-        self.txtMaxY.grid(row=2, column=2)
-        self.entMinY.grid(row=3, column=1)
-        self.entMaxY.grid(row=3, column=2)
+        self.txtExtremesY.grid(row=4, column=0)
+        self.txtMinY.grid(row=3, column=1)
+        self.txtMaxY.grid(row=3, column=2)
+        self.entMinY.grid(row=4, column=1)
+        self.entMaxY.grid(row=4, column=2)
 
         self.btnLoadFile.pack()
         self.txtFileName.pack()
@@ -71,18 +86,14 @@ class MyView:
 
         self.gridExtremes.pack(fill=tk.X, anchor=tk.NW)
 
+        self.cbInvertX.pack()
+        self.cbInvertY.pack()
+
+        txtAggregationLabel.pack()
+        self.aggregationPopup.pack()
+
         self.containerInput.pack(fill=tk.Y, side=tk.LEFT)
         self.containerInput.pack_propagate(0)
-
-        # Create a Tkinter variable
-        self.aggregationPopupValue = tk.StringVar(self.root)
-        # Dictionary with options
-        choices = {'Lukasiewicz', 'MinMax', 'TnormTconorm'}
-        self.aggregationPopupValue.set('Lukasiewicz')  # set the default option
-
-        self.aggregationPopup = tk.OptionMenu(self.gridExtremes, self.aggregationPopupValue, *choices)
-        tk.Label(self.gridExtremes, text="Aggregation Function").grid(row=4, column=1)
-        self.aggregationPopup.grid(row=5, column=1)
 
         # Plot
         self.containerPlot = tk.Frame(master=self.root)
@@ -120,8 +131,8 @@ class MyView:
         extreme_y_max = self.getEntryValue(self.entMaxY, 12)
 
         # TODO: get from UI
-        inverse_x = False
-        inverse_y = True
+        inverse_x = self.invertX.get()
+        inverse_y = self.invertY.get()
 
         # get selected aggregation function
         aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.aggregationPopupValue.get())
