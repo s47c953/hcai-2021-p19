@@ -89,15 +89,23 @@ class MyView:
         self.canvasPlot = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.figurePlot, master=self.containerPlot)
         self.canvasPlot.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
+    def getEntryValue(self, entry, default: float) -> float:
+        value = entry.get()
+        if value != "":
+            return float(value)
+        else:
+            entry.delete(0, tk.END)
+            entry.insert(0, default)
+            return default
+
     def plot(self, x_key: str, y_key: str):
 
         plot_targets = []
 
-        # TODO: get from UI
-        extreme_x_min = 400
-        extreme_x_max = 600
-        extreme_y_min = 8
-        extreme_y_max = 12
+        extreme_x_min = self.getEntryValue(self.entMinX, 400)
+        extreme_x_max = self.getEntryValue(self.entMaxX, 600)
+        extreme_y_min = self.getEntryValue(self.entMinY, 8)
+        extreme_y_max = self.getEntryValue(self.entMaxY, 12)
 
         # TODO: get from UI
         inverse_x = False
