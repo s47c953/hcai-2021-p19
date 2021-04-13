@@ -73,6 +73,16 @@ class MyView:
         self.containerInput.pack(fill=tk.Y, side=tk.LEFT)
         self.containerInput.pack_propagate(0)
 
+        # Create a Tkinter variable
+        self.aggregationPopupValue = tk.StringVar(self.root)
+        # Dictionary with options
+        choices = {'Lukasiewicz', 'MinMax', 'TnormTconorm'}
+        self.aggregationPopupValue.set('Lukasiewicz')  # set the default option
+
+        self.aggregationPopup = tk.OptionMenu(self.gridExtremes, self.aggregationPopupValue, *choices)
+        tk.Label(self.gridExtremes, text="Aggregation Function").grid(row=4, column=1)
+        self.aggregationPopup.grid(row=5, column=1)
+
         # Plot
         self.containerPlot = tk.Frame(master=self.root)
         self.containerPlot.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
@@ -90,6 +100,8 @@ class MyView:
 
     def plot(self, x_key: str, y_key: str):
 
+        self.targetSubPlot.clear()
+
         plot_targets = []
 
         # TODO: get from UI
@@ -102,8 +114,8 @@ class MyView:
         inverse_x = False
         inverse_y = True
 
-        # TODO: get from wherever
-        aggregation_function = AggregationFunction.TnormTconormAggregationFunction
+        # get selected aggregation function
+        aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.aggregationPopupValue.get())
 
         min_x = sys.float_info.max
         max_x = sys.float_info.min

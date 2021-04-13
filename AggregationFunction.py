@@ -5,6 +5,15 @@ class AggregationFunction:
     def perform(x: float, y: float) -> float:
         raise NotImplementedError
 
+    @staticmethod
+    def getClassFromString(s: str):
+        if s == "Lukasiewicz":
+            return LukasiewiczAggregationFunction
+        elif s == "MinMax":
+            return MinMaxAggregationFunction
+        elif s == "TnormTconorm":
+            return TnormTconormAggregationFunction
+
 
 class LukasiewiczAggregationFunction(AggregationFunction):
     @staticmethod
