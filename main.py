@@ -104,7 +104,7 @@ class MyView:
         inverse_y = True
 
         # TODO: get from wherever
-        aggregation_function = AggregationFunction.LukasiewiczAggregationFunction
+        aggregation_function = AggregationFunction.TnormTconormAggregationFunction
 
         min_x = sys.float_info.max
         max_x = sys.float_info.min
@@ -174,14 +174,52 @@ class MyView:
             else:
                 color = "gray"
 
-            annot = plot_targets.append({"x": target_x, "y": target_y, "val": point_value})
-            self.targetSubPlot.scatter(target_x, target_y, color=color)
-            self.targetSubPlot.annotate("", xy=(0, 0), xytext=(20, 20), textcoords="offset points",
-                     bbox=dict(boxstyle="round", fc="w"),
-                     arrowprops=dict(arrowstyle="->"))
-            annot.set_visible(False)
+            plot_targets.append({"x": target_x, "y": target_y, "val": point_value, "color": color})
 
+        # prepare lists for each axis and the color
+        x_targets = []
+        y_targets = []
+        color_targets = []
+        for target in plot_targets:
+            x_targets.append(target["x"])
+            y_targets.append(target["y"])
+            color_targets.append(target["color"])
 
+        # plot scatter plot
+        sc = self.targetSubPlot.scatter(x_targets, y_targets, color=color_targets)
+
+        # create annotation object and hide it
+        annot = self.targetSubPlot.annotate("", xy=(0, 0), xytext=(20, 20), textcoords="offset points",
+                            bbox=dict(boxstyle="round", fc="w"),
+                            arrowprops=dict(arrowstyle="->"))
+        annot.set_visible(False)
+
+        # hover event for nodes
+        def on_plot_hover(event):
+            if event.inaxes == self.targetSubPlot:
+                cont, ind = sc.contains(event)
+                if cont:
+                    # get correct value
+                    value = plot_targets[ind["ind"][0]]["val"]
+
+                    # set annotation position
+                    pos = sc.get_offsets()[ind["ind"][0]]
+                    annot.xy = pos
+
+                    # set annotation text
+                    annot.set_text(str(value))
+                    annot.get_bbox_patch().set_alpha(0.4)
+
+                    # set visible and redraw
+                    annot.set_visible(True)
+                    self.canvasPlot.draw_idle()
+                else:
+                    # hide annotation and redraw
+                    annot.set_visible(False)
+                    self.canvasPlot.draw_idle()
+
+        # set on hover event
+        self.canvasPlot.mpl_connect('motion_notify_event', on_plot_hover)
 
         self.targetSubPlot.set_xlim(0, 1)
         self.targetSubPlot.set_ylim(0, 1)
@@ -189,8 +227,13 @@ class MyView:
         # self.targetSubPlot.set_ylim(-0.05, 1.05)
         # self.targetSubPlot.set_xticks(10)
         # self.targetSubPlot.set_yticks(10)
-        self.targetSubPlot.plot([0.5, 1], [1, 0.5], color='green', linestyle='dotted', linewidth=2)
-        self.targetSubPlot.plot([0, 0.5], [0.5, 0], color='green', linestyle='dotted', linewidth=2)
+
+        # draw lines for the 4 sections
+        self.targetSubPlot.axhline(y=0.5, color='black', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.axvline(x=0.5, color='black', linestyle='dotted', linewidth=1)
+        # self.targetSubPlot.plot([0, 0.5], [0.5, 0], color='black', linestyle='dotted', linewidth=1)
+
+        # draw the data
         self.canvasPlot.draw()
 
     def run(self):

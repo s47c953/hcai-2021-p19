@@ -22,7 +22,7 @@ class LukasiewiczAggregationFunction(AggregationFunction):
 
     @staticmethod
     def _noFunction(x: float, y: float) -> float:
-        return max(0, x+y-0.5)
+        return max(0.0, x+y-0.5)
 
     @staticmethod
     def _maybeFunction(x: float, y: float) -> float:
