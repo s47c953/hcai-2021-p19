@@ -1,6 +1,7 @@
 import sys
 import tkinter
 import tkinter.filedialog as tkFile
+import tkinter.ttk
 import tkinter as tk
 
 import numpy
@@ -27,38 +28,34 @@ class MyView:
         # Input
         self.containerInput = tk.Frame(master=self.root, width=150)
 
+        # file loading elements
         self.txtFileName = tk.Label(master=self.containerInput, text="File Name")
-
         self.btnLoadFile = tk.Button(master=self.containerInput,
                                      text="Load File",
                                      width=self.btn_width,
                                      command=self.open_file)
+        self.btnLoadFile.pack()
+        self.txtFileName.pack()
 
+        # Aggregation Dropdown
+        self.aggregationPopupValue = tk.StringVar(self.containerInput)
+        # Dictionary with options
+        choices = {'Lukasiewicz', 'MinMax', 'TnormTconorm'}
+        self.aggregationPopupValue.set('Lukasiewicz')  # set the default option
+
+        self.aggregationPopup = tk.OptionMenu(self.containerInput, self.aggregationPopupValue, *choices)
+        txtAggregationLabel = tk.Label(master=self.containerInput, text="Aggregation Function")
+        txtAggregationLabel.pack()
+        self.aggregationPopup.pack()
+
+        # plotting trigger button
         self.btnPlot = tk.Button(master=self.containerInput,
                                  text="Plot",
                                  width=self.btn_width,
-                                 command=lambda: self.plot("sell", "time"))
+                                 command=lambda: self.plot("x", "y"))
+        self.btnPlot.pack()
 
-        self.btnAddValue = tk.Button(master=self.containerInput,
-                                 text="Add",
-                                 width=self.btn_width,
-                                 command=self.addUserInputData)
-
-        self.gridInput = tk.Frame(master=self.containerInput)
-        self.txtInputX = tk.Label(master=self.gridInput, text="X")
-        self.txtInputY = tk.Label(master=self.gridInput, text="Y")
-        self.entInputX = tk.Entry(master=self.gridInput, width=6)
-        self.entInputY = tk.Entry(master=self.gridInput, width=6)
-        self.txtInputX.grid(row=0, column=0)
-        self.txtInputY.grid(row=1, column=0)
-        self.entInputX.grid(row=0, column=1)
-        self.entInputY.grid(row=1, column=1)
-
-        self.invertX = tkinter.BooleanVar()
-        self.cbInvertX = tk.Checkbutton(master=self.containerInput, text="X Inverted", variable=self.invertX)
-        self.invertY = tkinter.BooleanVar()
-        self.cbInvertY = tk.Checkbutton(master=self.containerInput, text="Y Inverted", variable=self.invertY)
-
+        # extreme values
         self.gridExtremes = tk.Frame(master=self.containerInput)
 
         self.txtExtremesX = tk.Label(master=self.gridExtremes, text="X")
@@ -73,16 +70,7 @@ class MyView:
         self.entMinY = tk.Entry(master=self.gridExtremes, width=6)
         self.entMaxY = tk.Entry(master=self.gridExtremes, width=6)
         self.entMaxX = tk.Entry(master=self.gridExtremes, width=6)
-
-        # Create a Tkinter variable
-        self.aggregationPopupValue = tk.StringVar(self.containerInput)
-        # Dictionary with options
-        choices = {'Lukasiewicz', 'MinMax', 'TnormTconorm'}
-        self.aggregationPopupValue.set('Lukasiewicz')  # set the default option
-
-        self.aggregationPopup = tk.OptionMenu(self.containerInput, self.aggregationPopupValue, *choices)
-        txtAggregationLabel = tk.Label(master=self.containerInput, text="Aggregation Function")
-
+        self.gridExtremes.pack(fill=tk.X, anchor=tk.NW)
         self.txtExtremesX.grid(row=1, column=0)
         self.txtMinX.grid(row=0, column=1)
         self.txtMaxX.grid(row=0, column=2)
@@ -95,23 +83,35 @@ class MyView:
         self.entMinY.grid(row=4, column=1)
         self.entMaxY.grid(row=4, column=2)
 
-        self.btnLoadFile.pack()
-        self.txtFileName.pack()
-        self.btnPlot.pack()
-
-        self.gridExtremes.pack(fill=tk.X, anchor=tk.NW)
-
+        # inverting checkboxes
+        self.invertX = tkinter.BooleanVar()
+        self.cbInvertX = tk.Checkbutton(master=self.containerInput, text="X Inverted", variable=self.invertX)
+        self.invertY = tkinter.BooleanVar()
+        self.cbInvertY = tk.Checkbutton(master=self.containerInput, text="Y Inverted", variable=self.invertY)
         self.cbInvertX.pack()
         self.cbInvertY.pack()
 
-        txtAggregationLabel.pack()
-        self.aggregationPopup.pack()
+        # user input for points
+        self.gridInput = tk.Frame(master=self.containerInput)
+        self.txtInputX = tk.Label(master=self.gridInput, text="X")
+        self.txtInputY = tk.Label(master=self.gridInput, text="Y")
+        self.entInputX = tk.Entry(master=self.gridInput, width=6)
+        self.entInputY = tk.Entry(master=self.gridInput, width=6)
+        self.txtInputX.grid(row=0, column=0)
+        self.txtInputY.grid(row=1, column=0)
+        self.entInputX.grid(row=0, column=1)
+        self.entInputY.grid(row=1, column=1)
+        self.gridInput.pack(fill=tk.X, anchor=tk.NW)
+
+        self.btnAddValue = tk.Button(master=self.containerInput,
+                                 text="Add",
+                                 width=self.btn_width,
+                                 command=self.addUserInputData)
+        self.btnAddValue.pack()
 
         self.containerInput.pack(fill=tk.Y, side=tk.LEFT)
         self.containerInput.pack_propagate(0)
 
-        self.gridInput.pack(fill=tk.X, anchor=tk.NW)
-        self.btnAddValue.pack()
 
         # Plot
         self.containerPlot = tk.Frame(master=self.root)
@@ -131,7 +131,8 @@ class MyView:
     def addUserInputData(self):
         x = float(self.entInputX.get())
         y = float(self.entInputY.get())
-        self.data.append({"sell": x, "time": y})
+        self.data.append({"x": x, "y": y})
+        self.plot("x", "y")
 
     def getEntryValue(self, entry, default: float) -> float:
         value = entry.get()
@@ -190,6 +191,10 @@ class MyView:
         if min_y < extreme_y_min:
             min_y = extreme_y_min
 
+
+        # calculate sum of values for plotting
+        value_sum = 0
+
         # apply min_max_normalization
         for val in self.data:
             # get x values ensure value is within boundaries
@@ -219,6 +224,12 @@ class MyView:
 
             # get value from aggregation function
             point_value = aggregation_function.perform(target_x, target_y)
+
+            # add value to dict
+            val['value'] = point_value
+
+            # add to sum
+            value_sum += point_value
 
             color: str
             if point_value == 0:
@@ -330,6 +341,30 @@ class MyView:
                         value_dict[keys[index]] = float(entry.strip())
 
                 self.data.append(value_dict)
+
+        # get min and max default values
+        min_x = sys.float_info.max
+        max_x = sys.float_info.min
+        min_y = sys.float_info.min
+        max_y = sys.float_info.min
+        for data_point in self.data:
+            if data_point['x'] < min_x:
+                min_x = data_point['x']
+            elif data_point['x'] > max_x:
+                max_x = data_point['x']
+            if data_point['y'] < min_y:
+                min_y = data_point['y']
+            elif data_point['y'] > max_y:
+                max_y = data_point['y']
+
+        self.entMinX.delete(0, "end")
+        self.entMinX.insert(0, min_x)
+        self.entMaxX.delete(0, "end")
+        self.entMaxX.insert(0, max_x)
+        self.entMinY.delete(0, "end")
+        self.entMinY.insert(0, min_y)
+        self.entMaxY.delete(0, "end")
+        self.entMaxY.insert(0, max_y)
 
         return True
 
