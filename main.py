@@ -48,6 +48,14 @@ class MyView:
         txtAggregationLabel.pack()
         self.aggregationPopup.pack()
 
+        # k value
+        self.gridK = tk.Frame(master=self.containerInput)
+        tk.Label(master=self.gridK, text="k: ").grid(row=0, column=0)
+        self.entK = tk.Entry(master=self.gridK, width=6)
+        self.entK.insert(0, 1.0)
+        self.entK.grid(row=0, column=1)
+        self.gridK.pack()
+
         # plotting trigger button
         self.btnPlot = tk.Button(master=self.containerInput,
                                  text="Plot",
@@ -109,9 +117,18 @@ class MyView:
                                  command=self.addUserInputData)
         self.btnAddValue.pack()
 
+        # sum of all nodes
+        self.gridSum = tk.Frame(master=self.containerInput)
+        tk.Label(master=self.gridSum, text="Sum: ").grid(row=0, column=0)
+        self.txtSumValue = tk.StringVar()
+        self.txtSumValue.set(0)
+        lblSumValue = tk.Label(master=self.gridSum, textvariable=self.txtSumValue)
+        lblSumValue.grid(row=0, column=1)
+        self.gridSum.pack(fill=tk.X, anchor=tk.NW)
+
+########################
         self.containerInput.pack(fill=tk.Y, side=tk.LEFT)
         self.containerInput.pack_propagate(0)
-
 
         # Plot
         self.containerPlot = tk.Frame(master=self.root)
@@ -157,6 +174,8 @@ class MyView:
         # TODO: get from UI
         inverse_x = self.invertX.get()
         inverse_y = self.invertY.get()
+
+        k = float(self.entK.get())
 
         # get selected aggregation function
         aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.aggregationPopupValue.get())
@@ -223,7 +242,7 @@ class MyView:
 
 
             # get value from aggregation function
-            point_value = aggregation_function.perform(target_x, target_y)
+            point_value = aggregation_function.perform(target_x, target_y, k)
 
             # add value to dict
             val['value'] = point_value
@@ -240,6 +259,9 @@ class MyView:
                 color = "gray"
 
             plot_targets.append({"x": target_x, "y": target_y, "val": point_value, "color": color})
+
+        # plot the sum of values
+        self.txtSumValue.set("{:.4f}".format(value_sum))
 
         # prepare lists for each axis and the color
         x_targets = []
@@ -297,6 +319,12 @@ class MyView:
         self.targetSubPlot.axhline(y=0.5, color='black', linestyle='dotted', linewidth=1)
         self.targetSubPlot.axvline(x=0.5, color='black', linestyle='dotted', linewidth=1)
         # self.targetSubPlot.plot([0, 0.5], [0.5, 0], color='black', linestyle='dotted', linewidth=1)
+
+        # draw yes-no borders
+        marker = aggregation_function.getMarker(k)
+        self.targetSubPlot.plot([marker['ux'], marker['uy']], [marker['rx'], marker['ry']], color='black', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.plot([marker['lx'], marker['ly']], [marker['lox'], marker['loy']], color='black', linestyle='dotted', linewidth=1)
+
 
         # draw the data
         self.canvasPlot.draw()
