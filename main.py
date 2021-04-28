@@ -190,7 +190,8 @@ class MyView:
         inverse_x = self.invertX.get()
         inverse_y = self.invertY.get()
 
-        k = float(self.entK.get())
+        l = float(self.entK.get())
+        r = float(self.entR.get())
 
         # get selected aggregation function
         aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.aggregationPopupValue.get())
@@ -257,7 +258,7 @@ class MyView:
 
 
             # get value from aggregation function
-            point_value = aggregation_function.perform(target_x, target_y, k)
+            point_value = aggregation_function.perform(target_x, target_y, l, r)
 
             # add value to dict
             val['value'] = point_value
@@ -336,7 +337,7 @@ class MyView:
         # self.targetSubPlot.plot([0, 0.5], [0.5, 0], color='black', linestyle='dotted', linewidth=1)
 
         # draw yes-no borders
-        marker = aggregation_function.getMarker(k, 1.0)
+        marker = aggregation_function.getMarker(l, 1.0)
         self.targetSubPlot.plot([marker['ux'], marker['uy']], [marker['rx'], marker['ry']], color='black', linestyle='dotted', linewidth=1)
         self.targetSubPlot.plot([marker['lx'], marker['ly']], [marker['lox'], marker['loy']], color='black', linestyle='dotted', linewidth=1)
 
