@@ -374,7 +374,7 @@ class MyView:
         # get min and max default values
         min_x = sys.float_info.max
         max_x = sys.float_info.min
-        min_y = sys.float_info.min
+        min_y = sys.float_info.max
         max_y = sys.float_info.min
         for data_point in self.data:
             if data_point['x'] < min_x:
