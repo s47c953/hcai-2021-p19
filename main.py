@@ -322,7 +322,7 @@ class MyView:
         # self.targetSubPlot.plot([0, 0.5], [0.5, 0], color='black', linestyle='dotted', linewidth=1)
 
         # draw yes-no borders
-        marker = aggregation_function.getMarker(k)
+        marker = aggregation_function.getMarker(k, 1.0)
         self.targetSubPlot.plot([marker['ux'], marker['uy']], [marker['rx'], marker['ry']], color='black', linestyle='dotted', linewidth=1)
         self.targetSubPlot.plot([marker['lx'], marker['ly']], [marker['lox'], marker['loy']], color='black', linestyle='dotted', linewidth=1)
 
