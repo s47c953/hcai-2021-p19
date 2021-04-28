@@ -1,4 +1,7 @@
 # abstract base
+import sys
+
+
 class AggregationFunction:
     @staticmethod
     def perform(x: float, y: float, l: float = 1, r: float = 1) -> float:
@@ -15,6 +18,10 @@ class AggregationFunction:
 
     @staticmethod
     def getMarker(l: float, r: float):
+        raise NotImplementedError
+
+    @staticmethod
+    def getLambdaR(data: [], r_min: float, r_max: float, l_min: float, l_max: float, resolution: float):
         raise NotImplementedError
 
     @staticmethod
@@ -53,7 +60,8 @@ class LukasiewiczAggregationFunction(AggregationFunction):
     @staticmethod
     def _maybeFunction(x: float, y: float, l: float, r: float = 1) -> float:
         # TODO: check if real median or just middle value of 0, 1, x+y-1/2 is needed
-        val = (x ** (l*r) + y ** (l*r) - 0.5 ** l ** (1 / (l*r)))
+        # todo: check that hack
+        val = max(0.0, (x ** (l*r) + y ** (l*r) - 0.5 ** l)) ** (1 / (l*r))
         if val < 0:
             return 0.0
         elif val > 1:
@@ -78,6 +86,32 @@ class LukasiewiczAggregationFunction(AggregationFunction):
 
         return {'ux': upper_marker_x, 'uy': upper_marker_y, 'lox': lower_marker_x, 'loy': lower_marker_y,
                 'rx': right_marker_x, 'ry': right_marker_y, 'lx': left_marker_x, 'ly': left_marker_y}
+
+    @staticmethod
+    def getLambdaR(data: [], r_min: float, r_max: float, l_min: float, l_max: float, resolution: float):
+        min_error = sys.float_info.max
+        min_l = 1.0
+        min_r = 1.0
+
+        r = r_min
+        l = l_min
+        while r < r_max:
+            while l < l_max:
+                error = 0.0
+                for point in data:
+                    val = LukasiewiczAggregationFunction.perform(point['x'], point['y'], l, r)
+                    target = point['sol']
+                    error += abs(val-target)
+
+                if error < min_error:
+                    min_error = error
+                    min_l = l
+                    min_r = r
+                l += resolution
+
+            r += resolution
+
+        return min_error, min_l, min_r
 
 
 class MinMaxAggregationFunction(AggregationFunction):

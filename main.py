@@ -48,13 +48,27 @@ class MyView:
         txtAggregationLabel.pack()
         self.aggregationPopup.pack()
 
-        # k value
-        self.gridK = tk.Frame(master=self.containerInput)
-        tk.Label(master=self.gridK, text="k: ").grid(row=0, column=0)
-        self.entK = tk.Entry(master=self.gridK, width=6)
+        # lambda and r
+        self.gridLambdaR = tk.Frame(master=self.containerInput)
+        tk.Label(master=self.gridLambdaR, text="l: ").grid(row=0, column=0)
+        tk.Label(master=self.gridLambdaR, text="r: ").grid(row=1, column=0)
+        self.entK = tk.Entry(master=self.gridLambdaR, width=6)
         self.entK.insert(0, 1.0)
         self.entK.grid(row=0, column=1)
-        self.gridK.pack()
+        self.entR = tk.Entry(master=self.gridLambdaR, width=6)
+        self.entR.insert(0, 1.0)
+        self.entR.grid(row=1, column=1)
+        self.entError = tk.Entry(master=self.gridLambdaR, width=6)
+        self.entError.insert(0, 0.0)
+        self.entError.grid(row=2, column=1)
+        self.gridLambdaR.pack()
+
+        # calc lambda and r
+        self.btnPlot = tk.Button(master=self.containerInput,
+                                 text="calc l r",
+                                 width=self.btn_width,
+                                 command=self.calc_lambdaR)
+        self.btnPlot.pack()
 
         # plotting trigger button
         self.btnPlot = tk.Button(master=self.containerInput,
@@ -333,6 +347,18 @@ class MyView:
     def run(self):
         self.root.mainloop()
 
+    def calc_lambdaR(self):
+        aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.aggregationPopupValue.get())
+        error, l, r = aggregation_function.getLambdaR(self.data, 0.5, 2, 0.5, 2, 0.01)
+
+        self.entR.delete(0, "end")
+        self.entR.insert(0, "{:.4f}".format(r))
+        self.entK.delete(0, "end")
+        self.entK.insert(0, "{:.4f}".format(l))
+        self.entError.delete(0, "end")
+        self.entError.insert(0, "{:.4f}".format(error))
+        pass
+
     # source: https://realpython.com/python-gui-tkinter/#building-a-text-editor-example-app
     def open_file(self) -> bool:
 
@@ -364,12 +390,13 @@ class MyView:
 
                 for index, entry in enumerate(entries):
 
-                    if index == 0:
-                        value_dict[keys[index]] = entry.strip()
-                    else:
-                        value_dict[keys[index]] = float(entry.strip())
+                    # if index == 0:
+                    #     value_dict[keys[index]] = entry.strip()
+                    # else:
+                    value_dict[keys[index]] = float(entry.strip())
 
                 self.data.append(value_dict)
+
 
         # get min and max default values
         min_x = sys.float_info.max
