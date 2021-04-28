@@ -133,7 +133,8 @@ class MyView:
         y = float(self.entInputY.get())
         self.data.append({"sell": x, "time": y})
 
-    def getEntryValue(self, entry, default: float) -> float:
+    @staticmethod
+    def getEntryValue(entry, default: float) -> float:
         value = entry.get()
         if value != "":
             return float(value)
