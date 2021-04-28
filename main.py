@@ -350,7 +350,7 @@ class MyView:
 
     def calc_lambdaR(self):
         aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.aggregationPopupValue.get())
-        error, l, r = aggregation_function.getLambdaR(self.data, 0.5, 2, 0.5, 2, 0.01)
+        error, l, r = aggregation_function.getLambdaR(self.data, 0.75, 1.25, 0.75, 1.25, 0.01)
 
         self.entR.delete(0, "end")
         self.entR.insert(0, "{:.4f}".format(r))

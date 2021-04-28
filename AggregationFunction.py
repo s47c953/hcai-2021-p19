@@ -51,23 +51,23 @@ class LukasiewiczAggregationFunction(AggregationFunction):
 
     @staticmethod
     def _yesFunction(x: float, y: float, l: float, r: float = 1) -> float:
-        return min(1.0, (x ** (l*r) + y ** (l*r) - 0.5 ** l ** (1 / l)))
+        return min(1.0, ((x ** (l*r)) + (y ** (l*r)) - (0.5 ** l))) ** (1 / (l*r))
 
     @staticmethod
     def _noFunction(x: float, y: float, l: float, r: float = 1) -> float:
-        return max(0.0, (x ** (l*r) + y ** (l*r) - 0.5 ** l ** (1 / (l*r))))
+        return max(0.0, ((x ** (l*r)) + (y ** (l*r)) - (0.5 ** l))) ** (1 / (l*r))
 
     @staticmethod
     def _maybeFunction(x: float, y: float, l: float, r: float = 1) -> float:
         # TODO: check if real median or just middle value of 0, 1, x+y-1/2 is needed
         # todo: check that hack
-        val = max(0.0, (x ** (l*r) + y ** (l*r) - 0.5 ** l)) ** (1 / (l*r))
+        val = ((x ** (l*r)) + (y ** (l*r)) - (0.5 ** l))
         if val < 0:
             return 0.0
         elif val > 1:
             return 1.0
         else:
-            return val
+            return val ** (1 / (l*r))
 
     @staticmethod
     def getMarker(l: float, r: float) -> {}:
