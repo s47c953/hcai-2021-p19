@@ -247,8 +247,8 @@ class MyView:
                 y_val = extreme_y_min
 
             # apply min max normalization
-            target_x = (x_val - min_x)/(max_x - min_x)
-            target_y = (y_val - min_y)/(max_y - min_y)
+            target_x = x_val #(x_val - min_x)/(max_x - min_x)
+            target_y = y_val #(y_val - min_y)/(max_y - min_y)
 
             # inverse for plot if necessary
             if inverse_x:
@@ -256,9 +256,9 @@ class MyView:
             if inverse_y:
                 target_y = 1 - target_y
 
-
+            marker = aggregation_function.getMarker(l, r)
             # get value from aggregation function
-            point_value = aggregation_function.perform(target_x, target_y, l, r)
+            point_value = aggregation_function.perform(target_x, target_y, l, r, marker['ux'], marker['ly'])
 
             # add value to dict
             val['value'] = point_value
@@ -332,12 +332,12 @@ class MyView:
         # self.targetSubPlot.set_yticks(10)
 
         # draw lines for the 4 sections
-        self.targetSubPlot.axhline(y=0.5, color='black', linestyle='dotted', linewidth=1)
-        self.targetSubPlot.axvline(x=0.5, color='black', linestyle='dotted', linewidth=1)
+        marker = aggregation_function.getMarker(l, r)
+        self.targetSubPlot.axhline(y=marker['ly'], color='black', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.axvline(x=marker['ux'], color='black', linestyle='dotted', linewidth=1)
         # self.targetSubPlot.plot([0, 0.5], [0.5, 0], color='black', linestyle='dotted', linewidth=1)
 
         # draw yes-no borders
-        marker = aggregation_function.getMarker(l, 1.0)
         self.targetSubPlot.plot([marker['ux'], marker['uy']], [marker['rx'], marker['ry']], color='black', linestyle='dotted', linewidth=1)
         self.targetSubPlot.plot([marker['lx'], marker['ly']], [marker['lox'], marker['loy']], color='black', linestyle='dotted', linewidth=1)
 

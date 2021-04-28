@@ -4,7 +4,7 @@ import sys
 
 class AggregationFunction:
     @staticmethod
-    def perform(x: float, y: float, l: float = 1, r: float = 1) -> float:
+    def perform(x: float, y: float, l: float, r: float) -> float:
         raise NotImplementedError
 
     @staticmethod
@@ -41,12 +41,12 @@ class AggregationFunction:
 
 class LukasiewiczAggregationFunction(AggregationFunction):
     @staticmethod
-    def perform(x: float, y: float, l: float = 1, r: float = 1) -> float:
-        if x < 0.5 and y < 0.5:
+    def perform(x: float, y: float, l: float, r: float, x_border: float, y_border: float) -> float:
+        if x < x_border and y < y_border:
             return LukasiewiczAggregationFunction._noFunction(x, y, l, r)
-        elif x < 0.5 or y < 0.5:
+        elif x < x_border or y < y_border:
             return LukasiewiczAggregationFunction._maybeFunction(x, y, l, r)
-        elif x >= 0.5 and y >= 0.5:
+        elif x >= x_border and y >= y_border:
             return LukasiewiczAggregationFunction._yesFunction(x, y, l, r)
 
     @staticmethod
@@ -59,12 +59,10 @@ class LukasiewiczAggregationFunction(AggregationFunction):
 
     @staticmethod
     def _maybeFunction(x: float, y: float, l: float, r: float = 1) -> float:
-        # TODO: check if real median or just middle value of 0, 1, x+y-1/2 is needed
-        # todo: check that hack
         val = ((x ** (l*r)) + (y ** (l*r)) - (0.5 ** l))
         if val < 0:
             return 0.0
-        elif val > 1:
+        elif val ** (1 / (l*r)) > 1:
             return 1.0
         else:
             return val ** (1 / (l*r))
@@ -85,8 +83,8 @@ class LukasiewiczAggregationFunction(AggregationFunction):
                                                                                   False)
 
         # ux and ry have to be inverted since the result was calculated from the top right hand corner
-        return {'ux': 1 - upper_marker_x, 'uy': upper_marker_y, 'lox': lower_marker_x, 'loy': lower_marker_y,
-                'rx': right_marker_x, 'ry': 1 - right_marker_y, 'lx': left_marker_x, 'ly': left_marker_y}
+        return {'ux': upper_marker_x, 'uy': upper_marker_y, 'lox': lower_marker_x, 'loy': lower_marker_y,
+                'rx': right_marker_x, 'ry': right_marker_y, 'lx': left_marker_x, 'ly': left_marker_y}
 
     @staticmethod
     def getLambdaR(data: [], r_min: float, r_max: float, l_min: float, l_max: float, resolution: float):
@@ -100,7 +98,7 @@ class LukasiewiczAggregationFunction(AggregationFunction):
             while l < l_max:
                 error = 0.0
                 for point in data:
-                    val = LukasiewiczAggregationFunction.perform(point['x'], point['y'], l, r)
+                    val = LukasiewiczAggregationFunction.perform(point['x'], point['y'], l, r, 0.5, 0.5)
                     target = point['sol']
                     error += abs(val-target)
 
