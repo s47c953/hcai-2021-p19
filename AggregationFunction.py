@@ -84,8 +84,9 @@ class LukasiewiczAggregationFunction(AggregationFunction):
                                                                                   LukasiewiczAggregationFunction._noFunction,
                                                                                   False)
 
-        return {'ux': upper_marker_x, 'uy': upper_marker_y, 'lox': lower_marker_x, 'loy': lower_marker_y,
-                'rx': right_marker_x, 'ry': right_marker_y, 'lx': left_marker_x, 'ly': left_marker_y}
+        # ux and ry have to be inverted since the result was calculated from the top right hand corner
+        return {'ux': 1 - upper_marker_x, 'uy': upper_marker_y, 'lox': lower_marker_x, 'loy': lower_marker_y,
+                'rx': right_marker_x, 'ry': 1 - right_marker_y, 'lx': left_marker_x, 'ly': left_marker_y}
 
     @staticmethod
     def getLambdaR(data: [], r_min: float, r_max: float, l_min: float, l_max: float, resolution: float):
