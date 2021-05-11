@@ -23,7 +23,7 @@ class MyView:
 
         self.root = tk.Tk()
         self.root.title("Project 19")
-        self.root.geometry("600x400")
+        self.root.geometry("800x500")
 
         # Input
         self.containerInput = tk.Frame(master=self.root, width=150)
