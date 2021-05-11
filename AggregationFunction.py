@@ -41,46 +41,46 @@ class AggregationFunction:
 
 class LukasiewiczAggregationFunction(AggregationFunction):
     @staticmethod
-    def perform(x: float, y: float, l: float, r: float, x_border: float, y_border: float) -> float:
-        if x < x_border and y < y_border:
+    def perform(x: float, y: float, l: float, r: float) -> float:
+        if x < 0.5 and y < 0.5:
             return LukasiewiczAggregationFunction._noFunction(x, y, l, r)
-        elif x < x_border or y < y_border:
+        elif x < 0.5 or y < 0.5:
             return LukasiewiczAggregationFunction._maybeFunction(x, y, l, r)
-        elif x >= x_border and y >= y_border:
+        elif x >= 0.5 and y >= 0.5:
             return LukasiewiczAggregationFunction._yesFunction(x, y, l, r)
 
     @staticmethod
     def _yesFunction(x: float, y: float, l: float, r: float = 1) -> float:
-        return min(1.0, ((x ** (l*r)) + (y ** (l*r)) - (0.5 ** l))) ** (1 / (l*r))
+        return min(1.0, ((x ** l) + (y ** l) - (0.5 ** l))) ** (1 / l)
 
     @staticmethod
     def _noFunction(x: float, y: float, l: float, r: float = 1) -> float:
-        return max(0.0, ((x ** (l*r)) + (y ** (l*r)) - (0.5 ** l))) ** (1 / (l*r))
+        return max(0.0, ((x ** l) + (y ** l) - (0.5 ** l))) ** (1 / l)
 
     @staticmethod
     def _maybeFunction(x: float, y: float, l: float, r: float = 1) -> float:
-        val = ((x ** (l*r)) + (y ** (l*r)) - (0.5 ** l))
+        val = ((x ** r) + (y ** r) - 0.5) ** (1 / r)
         if val < 0:
             return 0.0
-        elif val ** (1 / (l*r)) > 1:
+        elif val > 1:
             return 1.0
         else:
-            return val ** (1 / (l*r))
+            return val
 
     @staticmethod
     def getMarker(l: float, r: float) -> {}:
         upper_marker_x, upper_marker_y = AggregationFunction.findMarkerFromFunction(l, r, 1, 1, 1, -0.01,
                                                                                     LukasiewiczAggregationFunction._yesFunction,
                                                                                     True)
-        lower_marker_x, lower_marker_y = AggregationFunction.findMarkerFromFunction(l, r, 0, 0, 0, 0.01,
+        lower_marker_x, lower_marker_y = AggregationFunction.findMarkerFromFunction(l, r, 0.5, 0, 0, 0.01,
                                                                                     LukasiewiczAggregationFunction._noFunction,
-                                                                                    True)
+                                                                                    False)
         right_marker_x, right_marker_y = AggregationFunction.findMarkerFromFunction(l, r, 1, 1, 1, -0.01,
                                                                                     LukasiewiczAggregationFunction._yesFunction,
                                                                                     False)
-        left_marker_x, left_marker_y = AggregationFunction.findMarkerFromFunction(l, r, 0, 0, 0, 0.01,
+        left_marker_x, left_marker_y = AggregationFunction.findMarkerFromFunction(l, r, 0, 0.5, 0, 0.01,
                                                                                   LukasiewiczAggregationFunction._noFunction,
-                                                                                  False)
+                                                                                  True)
 
         # ux and ry have to be inverted since the result was calculated from the top right hand corner
         return {'ux': upper_marker_x, 'uy': upper_marker_y, 'lox': lower_marker_x, 'loy': lower_marker_y,
@@ -98,7 +98,7 @@ class LukasiewiczAggregationFunction(AggregationFunction):
             while l < l_max:
                 error = 0.0
                 for point in data:
-                    val = LukasiewiczAggregationFunction.perform(point['x'], point['y'], l, r, 0.5, 0.5)
+                    val = LukasiewiczAggregationFunction.perform(point['x'], point['y'], l, r)
                     target = point['sol']
                     error += abs(val-target)
 
@@ -134,7 +134,7 @@ class MinMaxAggregationFunction(AggregationFunction):
     @staticmethod
     def _maybeFunction(x: float, y: float, l: float, r: float = 1) -> float:
         # TODO: check if real median or just middle value of 0, 1, x+y-1/2 is needed
-        return x ** (l*r) + y ** (l*r) - 0.5 ** l
+        return x ** r + y ** r - 0.5 ** l
 
 
 class TnormTconormAggregationFunction(AggregationFunction):

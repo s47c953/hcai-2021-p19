@@ -23,7 +23,7 @@ class MyView:
 
         self.root = tk.Tk()
         self.root.title("Project 19")
-        self.root.geometry("600x400")
+        self.root.geometry("800x600")
 
         # Input
         self.containerInput = tk.Frame(master=self.root, width=150)
@@ -50,8 +50,10 @@ class MyView:
 
         # lambda and r
         self.gridLambdaR = tk.Frame(master=self.containerInput)
-        tk.Label(master=self.gridLambdaR, text="l: ").grid(row=0, column=0)
-        tk.Label(master=self.gridLambdaR, text="r: ").grid(row=1, column=0)
+        tk.Label(master=self.gridLambdaR, text="l(yes): ").grid(row=0, column=0)
+        tk.Label(master=self.gridLambdaR, text="l(no ): ").grid(row=0, column=0)
+        tk.Label(master=self.gridLambdaR, text="r(top): ").grid(row=1, column=0)
+        tk.Label(master=self.gridLambdaR, text="r(bot): ").grid(row=1, column=0)
         self.entK = tk.Entry(master=self.gridLambdaR, width=6)
         self.entK.insert(0, 1.0)
         self.entK.grid(row=0, column=1)
@@ -258,7 +260,7 @@ class MyView:
 
             marker = aggregation_function.getMarker(l, r)
             # get value from aggregation function
-            point_value = aggregation_function.perform(target_x, target_y, l, r, marker['ux'], marker['ly'])
+            point_value = aggregation_function.perform(target_x, target_y, l, r)
 
             # add value to dict
             val['value'] = point_value
