@@ -50,19 +50,22 @@ class MyView:
 
         # lambda and r
         self.gridLambdaR = tk.Frame(master=self.containerInput)
-        tk.Label(master=self.gridLambdaR, text="l(yes): ").grid(row=0, column=0)
-        tk.Label(master=self.gridLambdaR, text="l(no ): ").grid(row=0, column=0)
-        tk.Label(master=self.gridLambdaR, text="r(top): ").grid(row=1, column=0)
-        tk.Label(master=self.gridLambdaR, text="r(bot): ").grid(row=1, column=0)
+        tk.Label(master=self.gridLambdaR, text="l: ").grid(row=0, column=0)
+        tk.Label(master=self.gridLambdaR, text="r: ").grid(row=1, column=0)
+        tk.Label(master=self.gridLambdaR, text="mean error l: ").grid(row=2, column=0)
+        tk.Label(master=self.gridLambdaR, text="mean error r: ").grid(row=3, column=0)
         self.entK = tk.Entry(master=self.gridLambdaR, width=6)
         self.entK.insert(0, 1.0)
         self.entK.grid(row=0, column=1)
         self.entR = tk.Entry(master=self.gridLambdaR, width=6)
         self.entR.insert(0, 1.0)
         self.entR.grid(row=1, column=1)
-        self.entError = tk.Entry(master=self.gridLambdaR, width=6)
-        self.entError.insert(0, 0.0)
-        self.entError.grid(row=2, column=1)
+        self.entErrorL = tk.Entry(master=self.gridLambdaR, width=6)
+        self.entErrorL.insert(0, 0.0)
+        self.entErrorL.grid(row=2, column=1)
+        self.entErrorR = tk.Entry(master=self.gridLambdaR, width=6)
+        self.entErrorR.insert(0, 0.0)
+        self.entErrorR.grid(row=3, column=1)
         self.gridLambdaR.pack()
 
         # calc lambda and r
@@ -338,7 +341,11 @@ class MyView:
         # draw lines for the 4 sections
         marker_x_yes, marker_y_yes, marker_x_no, marker_y_no = aggregation_function.getMarker(l)
         self.targetSubPlot.axhline(y=0.5, color='black', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.axhline(y=0, color='gray', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.axhline(y=1, color='gray', linestyle='dotted', linewidth=1)
         self.targetSubPlot.axvline(x=0.5, color='black', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.axvline(x=0, color='gray', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.axvline(x=1, color='gray', linestyle='dotted', linewidth=1)
         # self.targetSubPlot.plot([0, 0.5], [0.5, 0], color='black', linestyle='dotted', linewidth=1)
 
         # draw yes-no borders
@@ -353,14 +360,16 @@ class MyView:
 
     def calc_lambdaR(self):
         aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.aggregationPopupValue.get())
-        error, l, r = aggregation_function.getLambdaR(self.data, 0.75, 1.25, 0.75, 1.25, 0.01)
+        l_mean, r_mean, l, r = aggregation_function.getLambdaR(self.data, 0.001, 2, 0.001, 2, 0.001)
 
         self.entR.delete(0, "end")
         self.entR.insert(0, "{:.4f}".format(r))
         self.entK.delete(0, "end")
         self.entK.insert(0, "{:.4f}".format(l))
-        self.entError.delete(0, "end")
-        self.entError.insert(0, "{:.4f}".format(error))
+        self.entErrorL.delete(0, "end")
+        self.entErrorL.insert(0, "{:.4f}".format(l_mean))
+        self.entErrorR.delete(0, "end")
+        self.entErrorR.insert(0, "{:.4f}".format(r_mean))
         pass
 
     # source: https://realpython.com/python-gui-tkinter/#building-a-text-editor-example-app

@@ -4,6 +4,7 @@ import decimal
 
 
 class AggregationFunction:
+
     @staticmethod
     def perform(x: float, y: float, l: float, r: float) -> float:
         raise NotImplementedError
@@ -46,13 +47,7 @@ class LukasiewiczAggregationFunction(AggregationFunction):
 
     @staticmethod
     def _maybeFunction(x: float, y: float, l: float, r: float = 1) -> float:
-        val = ((x ** r) + (y ** r) - 0.5)
-        if val < 0:
-            return 0.0
-        elif val ** (1 / r) > 1:
-            return 1.0
-        else:
-            return val ** (1 / r)
+        return ((x ** r) + (y ** r) - (0.5 ** r)) ** (1 / r)
 
     @staticmethod
     def getMarker(l: float):
@@ -66,29 +61,54 @@ class LukasiewiczAggregationFunction(AggregationFunction):
 
     @staticmethod
     def getLambdaR(data: [], r_min: float, r_max: float, l_min: float, l_max: float, resolution: float):
-        min_error = sys.float_info.max
-        min_l = 1.0
-        min_r = 1.0
+
+        maybe_points = []
+        yes_points = []
+        no_points = []
+
+        for point in data:
+            if point['x'] <= 0.5 and point['y'] <= 0.5:
+                no_points.append(point)
+            elif point['x'] <= 0.5 or point['y'] <= 0.5:
+                maybe_points.append(point)
+            elif point['x'] >= 0.5 and point['y'] >= 0.5:
+                yes_points.append(point)
 
         r = r_min
-        l = l_min
-        while r < r_max:
-            while l < l_max:
-                error = 0.0
-                for point in data:
-                    val = LukasiewiczAggregationFunction.perform(point['x'], point['y'], l, r)
-                    target = point['sol']
-                    error += abs(val-target)
-
-                if error < min_error:
-                    min_error = error
-                    min_l = l
-                    min_r = r
-                l += resolution
-
+        r_result = r
+        r_error = sys.float_info.max
+        while r <= r_max:
+            error = 0.0
+            for point in maybe_points:
+                value = LukasiewiczAggregationFunction._maybeFunction(point['x'], point['y'], 1, r)
+                target_value = point['sol']
+                error += abs(value - target_value)
+            if error < r_error:
+                r_result = r
+                r_error = error
             r += resolution
+        r_mean_error = r_error / len(maybe_points)
 
-        return min_error, min_l, min_r
+        l = l_min
+        l_result = l
+        l_error = sys.float_info.max
+        while l <= l_max:
+            error = 0.0
+            for point in yes_points:
+                value = LukasiewiczAggregationFunction._yesFunction(point['x'], point['y'], l, 1)
+                target_value = point['sol']
+                error += abs(value - target_value)
+            for point in no_points:
+                value = LukasiewiczAggregationFunction._noFunction(point['x'], point['y'], l, 1)
+                target_value = point['sol']
+                error += abs(value - target_value)
+            if error < l_error:
+                l_result = l
+                l_error = error
+            l += resolution
+        l_mean_error = l_error / (len(yes_points) + len(no_points))
+
+        return l_mean_error, r_mean_error, l_result, r_result
 
 
 class MinMaxAggregationFunction(AggregationFunction):
