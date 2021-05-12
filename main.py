@@ -270,16 +270,29 @@ class MyView:
             # add to sum
             value_sum += point_value
 
-            color: str
-            if point_value == 0:
-                color = "red"
-            elif point_value == 1:
-                color = "green"
+            # color: str
+            # if point_value == 0:
+            #     color = "red"
+            # elif point_value == 1:
+            #     color = "green"
+            # else:
+            #     blue_val = format(255 - int(55 + (200 * point_value)), 'x')
+            #     if len(blue_val) == 1:
+            #         blue_val = "0" + blue_val
+            #     color = f"#BBBB{blue_val}"
+
+            if point_value != 0 and point_value != 1:
+                blue_val = "44"
             else:
-                blue_val = format(255 - int(55 + (200 * point_value)), 'x')
-                if len(blue_val) == 1:
-                    blue_val = "0" + blue_val
-                color = f"#BBBB{blue_val}"
+                blue_val = "00"
+
+            red_val = format(255 - int(255 * point_value), 'x')
+            green_val = format(int(255 * point_value), 'x')
+            if len(green_val) == 1:
+                green_val = "0" + green_val
+            if len(red_val) == 1:
+                red_val = "0" + red_val
+            color = f"#{red_val}{green_val}{blue_val}"
 
             plot_targets.append({"x": target_x, "y": target_y, "val": point_value, "color": color})
 
@@ -360,7 +373,7 @@ class MyView:
 
     def calc_lambdaR(self):
         aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.aggregationPopupValue.get())
-        l_mean, r_mean, l, r = aggregation_function.getLambdaR(self.data, 0.001, 2, 0.001, 2, 0.001)
+        l_mean, r_mean, l, r = aggregation_function.getLambdaR(self.data, 0.0001, 2, 0.0001, 2, 0.0001)
 
         self.entR.delete(0, "end")
         self.entR.insert(0, "{:.4f}".format(r))

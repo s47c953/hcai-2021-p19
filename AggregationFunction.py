@@ -77,6 +77,7 @@ class LukasiewiczAggregationFunction(AggregationFunction):
         r = r_min
         r_result = r
         r_error = sys.float_info.max
+        r_mean_error = 0
         while r <= r_max:
             error = 0.0
             for point in maybe_points:
@@ -87,11 +88,15 @@ class LukasiewiczAggregationFunction(AggregationFunction):
                 r_result = r
                 r_error = error
             r += resolution
-        r_mean_error = r_error / len(maybe_points)
+        if len(maybe_points) != 0:
+            r_mean_error = r_error / len(maybe_points)
+        else:
+            r_result = 1.0
 
         l = l_min
         l_result = l
         l_error = sys.float_info.max
+        l_mean_error = 0
         while l <= l_max:
             error = 0.0
             for point in yes_points:
@@ -106,7 +111,10 @@ class LukasiewiczAggregationFunction(AggregationFunction):
                 l_result = l
                 l_error = error
             l += resolution
-        l_mean_error = l_error / (len(yes_points) + len(no_points))
+        if len(yes_points) + len(no_points) != 0:
+            l_mean_error = l_error / (len(yes_points) + len(no_points))
+        else:
+            l_result = 1.0
 
         return l_mean_error, r_mean_error, l_result, r_result
 
