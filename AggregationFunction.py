@@ -1,5 +1,6 @@
 # abstract base
 import sys
+import decimal
 
 
 class AggregationFunction:
@@ -17,34 +18,20 @@ class AggregationFunction:
             return TnormTconormAggregationFunction
 
     @staticmethod
-    def getMarker(l: float, r: float):
+    def getMarker(l: float):
         raise NotImplementedError
 
     @staticmethod
     def getLambdaR(data: [], r_min: float, r_max: float, l_min: float, l_max: float, resolution: float):
         raise NotImplementedError
 
-    @staticmethod
-    def findMarkerFromFunction(l: float, r: float, x_start: float, y_start: float, start_value: float, inc: float, func, inc_x=True):
-        # random init
-        x = x_start
-        y = y_start
-        res = func(x, y, l, r)
-        while res == start_value:
-            if inc_x:
-                x += inc
-            else:
-                y += inc
-            res = func(x, y, l, r)
-        return x, y
-
 
 class LukasiewiczAggregationFunction(AggregationFunction):
     @staticmethod
     def perform(x: float, y: float, l: float, r: float) -> float:
-        if x < 0.5 and y < 0.5:
+        if x <= 0.5 and y <= 0.5:
             return LukasiewiczAggregationFunction._noFunction(x, y, l, r)
-        elif x < 0.5 or y < 0.5:
+        elif x <= 0.5 or y <= 0.5:
             return LukasiewiczAggregationFunction._maybeFunction(x, y, l, r)
         elif x >= 0.5 and y >= 0.5:
             return LukasiewiczAggregationFunction._yesFunction(x, y, l, r)
@@ -59,32 +46,23 @@ class LukasiewiczAggregationFunction(AggregationFunction):
 
     @staticmethod
     def _maybeFunction(x: float, y: float, l: float, r: float = 1) -> float:
-        val = ((x ** r) + (y ** r) - 0.5) ** (1 / r)
+        val = ((x ** r) + (y ** r) - 0.5)
         if val < 0:
             return 0.0
-        elif val > 1:
+        elif val ** (1 / r) > 1:
             return 1.0
         else:
-            return val
+            return val ** (1 / r)
 
     @staticmethod
-    def getMarker(l: float, r: float) -> {}:
-        upper_marker_x, upper_marker_y = AggregationFunction.findMarkerFromFunction(l, r, 1, 1, 1, -0.01,
-                                                                                    LukasiewiczAggregationFunction._yesFunction,
-                                                                                    True)
-        lower_marker_x, lower_marker_y = AggregationFunction.findMarkerFromFunction(l, r, 0.5, 0, 0, 0.01,
-                                                                                    LukasiewiczAggregationFunction._noFunction,
-                                                                                    False)
-        right_marker_x, right_marker_y = AggregationFunction.findMarkerFromFunction(l, r, 1, 1, 1, -0.01,
-                                                                                    LukasiewiczAggregationFunction._yesFunction,
-                                                                                    False)
-        left_marker_x, left_marker_y = AggregationFunction.findMarkerFromFunction(l, r, 0, 0.5, 0, 0.01,
-                                                                                  LukasiewiczAggregationFunction._noFunction,
-                                                                                  True)
+    def getMarker(l: float):
+        x_no = [val/100 for val in range(0, 51)]
+        x_yes = [val/100 for val in range(50, 101)]
 
-        # ux and ry have to be inverted since the result was calculated from the top right hand corner
-        return {'ux': upper_marker_x, 'uy': upper_marker_y, 'lox': lower_marker_x, 'loy': lower_marker_y,
-                'rx': right_marker_x, 'ry': right_marker_y, 'lx': left_marker_x, 'ly': left_marker_y}
+        y_yes = [((-x ** l) + (0.5 ** l) + 1)**(1/l) for x in x_yes]
+        y_no = [((0.5 ** l) - (x ** l))**(1/l) for x in x_no]
+
+        return x_yes, y_yes, x_no, y_no
 
     @staticmethod
     def getLambdaR(data: [], r_min: float, r_max: float, l_min: float, l_max: float, resolution: float):
@@ -134,7 +112,17 @@ class MinMaxAggregationFunction(AggregationFunction):
     @staticmethod
     def _maybeFunction(x: float, y: float, l: float, r: float = 1) -> float:
         # TODO: check if real median or just middle value of 0, 1, x+y-1/2 is needed
-        return x ** r + y ** r - 0.5 ** l
+        return x + y - 0.5
+
+    @staticmethod
+    def getMarker(l: float):
+        x_no = [val / 100 for val in range(0, 51)]
+        x_yes = [val / 100 for val in range(50, 101)]
+
+        y_yes = [1 for x in x_yes]
+        y_no = [0 for x in x_no]
+
+        return x_yes, y_yes, x_no, y_no
 
 
 class TnormTconormAggregationFunction(AggregationFunction):
@@ -149,13 +137,18 @@ class TnormTconormAggregationFunction(AggregationFunction):
 
     @staticmethod
     def _yesFunction(x: float, y: float, l: float, r: float = 1) -> float:
-        return -1 + 2 * x + 2 * y - 2 * x * y
+        x = decimal.Decimal(x)
+        y = decimal.Decimal(y)
+        return (-1 + (2 * x) + (2 * y) - (2 * x * y)).__float__()
 
     @staticmethod
     def _noFunction(x: float, y: float, l: float, r: float = 1) -> float:
-        return TnormTconormAggregationFunction._maybeFunction(x, y)
+        return TnormTconormAggregationFunction._maybeFunction(x, y, l)
 
     @staticmethod
     def _maybeFunction(x: float, y: float, l: float, r: float = 1) -> float:
-        # TODO: check if real median or just middle value of 0, 1, x+y-1/2 is needed
         return 2 * x * y
+
+    @staticmethod
+    def getMarker(l: float):
+        return [], [], [], []

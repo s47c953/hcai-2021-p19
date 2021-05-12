@@ -258,7 +258,6 @@ class MyView:
             if inverse_y:
                 target_y = 1 - target_y
 
-            marker = aggregation_function.getMarker(l, r)
             # get value from aggregation function
             point_value = aggregation_function.perform(target_x, target_y, l, r)
 
@@ -274,7 +273,10 @@ class MyView:
             elif point_value == 1:
                 color = "green"
             else:
-                color = "gray"
+                blue_val = format(255 - int(55 + (200 * point_value)), 'x')
+                if len(blue_val) == 1:
+                    blue_val = "0" + blue_val
+                color = f"#BBBB{blue_val}"
 
             plot_targets.append({"x": target_x, "y": target_y, "val": point_value, "color": color})
 
@@ -312,7 +314,7 @@ class MyView:
                     annot.xy = pos
 
                     # set annotation text
-                    annot.set_text(str(value))
+                    annot.set_text(f"{pos} - {value}")
                     annot.get_bbox_patch().set_alpha(0.4)
 
                     # set visible and redraw
@@ -328,21 +330,20 @@ class MyView:
 
         self.targetSubPlot.set_xlim(0, 1)
         self.targetSubPlot.set_ylim(0, 1)
-        # self.targetSubPlot.set_xlim(-0.05, 1.05)
-        # self.targetSubPlot.set_ylim(-0.05, 1.05)
+        self.targetSubPlot.set_xlim(-0.05, 1.05)
+        self.targetSubPlot.set_ylim(-0.05, 1.05)
         # self.targetSubPlot.set_xticks(10)
         # self.targetSubPlot.set_yticks(10)
 
         # draw lines for the 4 sections
-        marker = aggregation_function.getMarker(l, r)
-        self.targetSubPlot.axhline(y=marker['ly'], color='black', linestyle='dotted', linewidth=1)
-        self.targetSubPlot.axvline(x=marker['ux'], color='black', linestyle='dotted', linewidth=1)
+        marker_x_yes, marker_y_yes, marker_x_no, marker_y_no = aggregation_function.getMarker(l)
+        self.targetSubPlot.axhline(y=0.5, color='black', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.axvline(x=0.5, color='black', linestyle='dotted', linewidth=1)
         # self.targetSubPlot.plot([0, 0.5], [0.5, 0], color='black', linestyle='dotted', linewidth=1)
 
         # draw yes-no borders
-        self.targetSubPlot.plot([marker['ux'], marker['uy']], [marker['rx'], marker['ry']], color='black', linestyle='dotted', linewidth=1)
-        self.targetSubPlot.plot([marker['lx'], marker['ly']], [marker['lox'], marker['loy']], color='black', linestyle='dotted', linewidth=1)
-
+        self.targetSubPlot.plot(marker_x_yes, marker_y_yes, color='black', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.plot(marker_x_no, marker_y_no, color='black', linestyle='dotted', linewidth=1)
 
         # draw the data
         self.canvasPlot.draw()
@@ -365,6 +366,7 @@ class MyView:
     # source: https://realpython.com/python-gui-tkinter/#building-a-text-editor-example-app
     def open_file(self) -> bool:
 
+        self.data.clear()
         """Open a file for editing."""
         filepath = tkFile.askopenfilename(
             filetypes=[("CSV Files", "*.csv"), ("All Files", "*.*")]
