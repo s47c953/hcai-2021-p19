@@ -67,12 +67,13 @@ class LukasiewiczAggregationFunction(AggregationFunction):
         no_points = []
 
         for point in data:
-            if point['x'] <= 0.5 and point['y'] <= 0.5:
-                no_points.append(point)
-            elif point['x'] <= 0.5 or point['y'] <= 0.5:
-                maybe_points.append(point)
-            elif point['x'] >= 0.5 and point['y'] >= 0.5:
-                yes_points.append(point)
+            if 'sol' in point:
+                if point['x'] <= 0.5 and point['y'] <= 0.5:
+                    no_points.append(point)
+                elif point['x'] <= 0.5 or point['y'] <= 0.5:
+                    maybe_points.append(point)
+                elif point['x'] >= 0.5 and point['y'] >= 0.5:
+                    yes_points.append(point)
 
         r = r_min
         r_result = r

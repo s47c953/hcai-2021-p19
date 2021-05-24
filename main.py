@@ -11,11 +11,11 @@ import matplotlib.backends.backend_tkagg
 import os.path as path
 
 import AggregationFunction
+import UITools
 
 
 # Trash code
 class MyView:
-
     btn_width = 10
 
     def __init__(self):
@@ -24,6 +24,12 @@ class MyView:
         self.root = tk.Tk()
         self.root.title("Project 19")
         self.root.geometry("800x600")
+
+        self.selected_index = -1
+
+        # IDs of eventhandle, needed to be unregistered on new plot
+        self.hoover_cid = None
+        self.click_cid = None
 
         # Input
         self.containerInput = tk.Frame(master=self.root, width=150)
@@ -69,11 +75,11 @@ class MyView:
         self.gridLambdaR.pack()
 
         # calc lambda and r
-        self.btnPlot = tk.Button(master=self.containerInput,
-                                 text="calc l r",
-                                 width=self.btn_width,
-                                 command=self.calc_lambdaR)
-        self.btnPlot.pack()
+        self.btnCalcLR = tk.Button(master=self.containerInput,
+                                   text="calc l r",
+                                   width=self.btn_width,
+                                   command=self.calc_lambdaR)
+        self.btnCalcLR.pack()
 
         # plotting trigger button
         self.btnPlot = tk.Button(master=self.containerInput,
@@ -82,33 +88,12 @@ class MyView:
                                  command=lambda: self.plot("x", "y"))
         self.btnPlot.pack()
 
-        # extreme values
-        self.gridExtremes = tk.Frame(master=self.containerInput)
-
-        self.txtExtremesX = tk.Label(master=self.gridExtremes, text="X")
-        self.txtExtremesY = tk.Label(master=self.gridExtremes, text="Y")
-
-        self.txtMinX = tk.Label(master=self.gridExtremes, text="Min")
-        self.txtMaxX = tk.Label(master=self.gridExtremes, text="Max")
-        self.txtMinY = tk.Label(master=self.gridExtremes, text="Min")
-        self.txtMaxY = tk.Label(master=self.gridExtremes, text="Max")
-
-        self.entMinX = tk.Entry(master=self.gridExtremes, width=6)
-        self.entMinY = tk.Entry(master=self.gridExtremes, width=6)
-        self.entMaxY = tk.Entry(master=self.gridExtremes, width=6)
-        self.entMaxX = tk.Entry(master=self.gridExtremes, width=6)
-        self.gridExtremes.pack(fill=tk.X, anchor=tk.NW)
-        self.txtExtremesX.grid(row=1, column=0)
-        self.txtMinX.grid(row=0, column=1)
-        self.txtMaxX.grid(row=0, column=2)
-        self.entMinX.grid(row=1, column=1)
-        self.entMaxX.grid(row=1, column=2)
-
-        self.txtExtremesY.grid(row=4, column=0)
-        self.txtMinY.grid(row=3, column=1)
-        self.txtMaxY.grid(row=3, column=2)
-        self.entMinY.grid(row=4, column=1)
-        self.entMaxY.grid(row=4, column=2)
+        # clear data trigger button
+        self.btnClear = tk.Button(master=self.containerInput,
+                                  text="Clear",
+                                  width=self.btn_width,
+                                  command=self.clear)
+        self.btnClear.pack()
 
         # inverting checkboxes
         self.invertX = tkinter.BooleanVar()
@@ -122,19 +107,29 @@ class MyView:
         self.gridInput = tk.Frame(master=self.containerInput)
         self.txtInputX = tk.Label(master=self.gridInput, text="X")
         self.txtInputY = tk.Label(master=self.gridInput, text="Y")
+        self.txtInputSol = tk.Label(master=self.gridInput, text="Sol")
         self.entInputX = tk.Entry(master=self.gridInput, width=6)
         self.entInputY = tk.Entry(master=self.gridInput, width=6)
+        self.entInputSol = tk.Entry(master=self.gridInput, width=6)
         self.txtInputX.grid(row=0, column=0)
         self.txtInputY.grid(row=1, column=0)
+        self.txtInputSol.grid(row=2, column=0)
         self.entInputX.grid(row=0, column=1)
         self.entInputY.grid(row=1, column=1)
+        self.entInputSol.grid(row=2, column=1)
         self.gridInput.pack(fill=tk.X, anchor=tk.NW)
 
         self.btnAddValue = tk.Button(master=self.containerInput,
-                                 text="Add",
-                                 width=self.btn_width,
-                                 command=self.addUserInputData)
+                                     text="Add",
+                                     width=self.btn_width,
+                                     command=self.addUserInputData)
+
+        self.btnChangeValue = tk.Button(master=self.containerInput,
+                                        text="Change",
+                                        width=self.btn_width,
+                                        command=self.changeInputData)
         self.btnAddValue.pack()
+        self.btnChangeValue.pack()
 
         # sum of all nodes
         self.gridSum = tk.Frame(master=self.containerInput)
@@ -145,7 +140,6 @@ class MyView:
         lblSumValue.grid(row=0, column=1)
         self.gridSum.pack(fill=tk.X, anchor=tk.NW)
 
-########################
         self.containerInput.pack(fill=tk.Y, side=tk.LEFT)
         self.containerInput.pack_propagate(0)
 
@@ -164,9 +158,13 @@ class MyView:
         self.canvasPlot = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.figurePlot, master=self.containerPlot)
         self.canvasPlot.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
+    def changeInputData(self):
+        self.data[self.selected_index]["sol"] = float(self.entInputSol.get())
+
     def addUserInputData(self):
         x = float(self.entInputX.get())
         y = float(self.entInputY.get())
+
         self.data.append({"x": x, "y": y})
         self.plot("x", "y")
 
@@ -180,16 +178,14 @@ class MyView:
             entry.insert(0, default)
             return default
 
+    def clear(self):
+        self.data.clear()
+        self.calc_lambdaR()
+        self.plot("x", "y")
+
     def plot(self, x_key: str, y_key: str):
-
         self.targetSubPlot.clear()
-
         plot_targets = []
-
-        extreme_x_min = self.getEntryValue(self.entMinX, 400)
-        extreme_x_max = self.getEntryValue(self.entMaxX, 600)
-        extreme_y_min = self.getEntryValue(self.entMinY, 8)
-        extreme_y_max = self.getEntryValue(self.entMaxY, 12)
 
         # TODO: get from UI
         inverse_x = self.invertX.get()
@@ -201,100 +197,9 @@ class MyView:
         # get selected aggregation function
         aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.aggregationPopupValue.get())
 
-        min_x = sys.float_info.max
-        max_x = sys.float_info.min
-        min_y = sys.float_info.max
-        max_y = sys.float_info.min
-
-        # get min and max values
-        for val in self.data:
-            x = val[x_key]
-            y = val[y_key]
-
-            if x > max_x:
-                max_x = x
-            elif x < min_x:
-                min_x = x
-
-            if y > max_y:
-                max_y = y
-            elif y < min_y:
-                min_y = y
-
-        # set boundaries from extreme values
-        if max_x > extreme_x_max:
-            max_x = extreme_x_max
-        if min_x < extreme_x_min:
-            min_x = extreme_x_min
-        if max_y > extreme_y_max:
-            max_y = extreme_y_max
-        if min_y < extreme_y_min:
-            min_y = extreme_y_min
-
-
         # calculate sum of values for plotting
-        value_sum = 0
-
-        # apply min_max_normalization
-        for val in self.data:
-            # get x values ensure value is within boundaries
-            x_val = val[x_key]
-            if x_val > extreme_x_max:
-                x_val = extreme_x_max
-            elif x_val < extreme_x_min:
-                x_val = extreme_x_min
-
-            # get y values ensure value is within boundaries
-            y_val = val[y_key]
-            if y_val > extreme_y_max:
-                y_val = extreme_y_max
-            elif y_val < extreme_y_min:
-                y_val = extreme_y_min
-
-            # apply min max normalization
-            target_x = x_val #(x_val - min_x)/(max_x - min_x)
-            target_y = y_val #(y_val - min_y)/(max_y - min_y)
-
-            # inverse for plot if necessary
-            if inverse_x:
-                target_x = 1 - target_x
-            if inverse_y:
-                target_y = 1 - target_y
-
-            # get value from aggregation function
-            point_value = aggregation_function.perform(target_x, target_y, l, r)
-
-            # add value to dict
-            val['value'] = point_value
-
-            # add to sum
-            value_sum += point_value
-
-            # color: str
-            # if point_value == 0:
-            #     color = "red"
-            # elif point_value == 1:
-            #     color = "green"
-            # else:
-            #     blue_val = format(255 - int(55 + (200 * point_value)), 'x')
-            #     if len(blue_val) == 1:
-            #         blue_val = "0" + blue_val
-            #     color = f"#BBBB{blue_val}"
-
-            if point_value != 0 and point_value != 1:
-                blue_val = "44"
-            else:
-                blue_val = "00"
-
-            red_val = format(255 - int(255 * point_value), 'x')
-            green_val = format(int(255 * point_value), 'x')
-            if len(green_val) == 1:
-                green_val = "0" + green_val
-            if len(red_val) == 1:
-                red_val = "0" + red_val
-            color = f"#{red_val}{green_val}{blue_val}"
-
-            plot_targets.append({"x": target_x, "y": target_y, "val": point_value, "color": color})
+        plot_targets, value_sum = UITools.preparePlotTargets(self.data, x_key, y_key, inverse_x, inverse_y,
+                                                             aggregation_function, l, r)
 
         # plot the sum of values
         self.txtSumValue.set("{:.4f}".format(value_sum))
@@ -303,18 +208,25 @@ class MyView:
         x_targets = []
         y_targets = []
         color_targets = []
-        for target in plot_targets:
+        border_targets = []
+        for i, target in enumerate(plot_targets):
             x_targets.append(target["x"])
             y_targets.append(target["y"])
             color_targets.append(target["color"])
+            if i == self.selected_index:
+                border_targets.append("blue")
+            elif target["is_training_point"]:
+                border_targets.append("white")
+            else:
+                border_targets.append("black")
 
         # plot scatter plot
-        sc = self.targetSubPlot.scatter(x_targets, y_targets, color=color_targets)
+        sc = self.targetSubPlot.scatter(x_targets, y_targets, color=color_targets, edgecolors=border_targets)
 
         # create annotation object and hide it
         annot = self.targetSubPlot.annotate("", xy=(0, 0), xytext=(20, 20), textcoords="offset points",
-                            bbox=dict(boxstyle="round", fc="w"),
-                            arrowprops=dict(arrowstyle="->"))
+                                            bbox=dict(boxstyle="round", fc="w"),
+                                            arrowprops=dict(arrowstyle="->"))
         annot.set_visible(False)
 
         # hover event for nodes
@@ -322,15 +234,20 @@ class MyView:
             if event.inaxes == self.targetSubPlot:
                 cont, ind = sc.contains(event)
                 if cont:
+                    index = ind["ind"][0]
                     # get correct value
-                    value = plot_targets[ind["ind"][0]]["val"]
+                    value = plot_targets[index]["val"]
+                    if "sol" in self.data[index]:
+                        target = self.data[index]["sol"]
+                    else:
+                        target = "not defined"
 
                     # set annotation position
-                    pos = sc.get_offsets()[ind["ind"][0]]
+                    pos = sc.get_offsets()[index]
                     annot.xy = pos
 
                     # set annotation text
-                    annot.set_text(f"{pos} - {value}")
+                    annot.set_text(f"{pos}\ntarget: {target}\ncalculated: {value}")
                     annot.get_bbox_patch().set_alpha(0.4)
 
                     # set visible and redraw
@@ -341,8 +258,35 @@ class MyView:
                     annot.set_visible(False)
                     self.canvasPlot.draw_idle()
 
+        def on_node_click(event):
+            if event.inaxes == self.targetSubPlot:
+                cont, ind = sc.contains(event)
+                if cont:
+                    # get correct value
+                    index = ind["ind"][0]
+                    x = self.data[index]["x"]
+                    y = self.data[index]["y"]
+                    if "sol" in self.data[index]:
+                        sol = self.data[index]["sol"]
+                    else:
+                        sol = -1
+
+                    self.entInputX.delete(0, "end")
+                    self.entInputX.insert(0, "{:.4f}".format(x))
+                    self.entInputY.delete(0, "end")
+                    self.entInputY.insert(0, "{:.4f}".format(y))
+                    self.entInputSol.delete(0, "end")
+                    self.entInputSol.insert(0, "{:.4f}".format(sol))
+                    self.selected_index = index
+                    self.plot("x", "y")
+
         # set on hover event
-        self.canvasPlot.mpl_connect('motion_notify_event', on_plot_hover)
+        if self.hoover_cid:
+            self.canvasPlot.mpl_disconnect(self.hoover_cid)
+        if self.click_cid:
+            self.canvasPlot.mpl_disconnect(self.click_cid)
+        self.hoover_cid = self.canvasPlot.mpl_connect('motion_notify_event', on_plot_hover)
+        self.click_cid = self.canvasPlot.mpl_connect('button_press_event', on_node_click)
 
         self.targetSubPlot.set_xlim(0, 1)
         self.targetSubPlot.set_ylim(0, 1)
@@ -388,7 +332,8 @@ class MyView:
     # source: https://realpython.com/python-gui-tkinter/#building-a-text-editor-example-app
     def open_file(self) -> bool:
 
-        self.data.clear()
+        # clearing is now done explicit via UI
+        # self.data.clear()
         """Open a file for editing."""
         filepath = tkFile.askopenfilename(
             filetypes=[("CSV Files", "*.csv"), ("All Files", "*.*")]
@@ -416,38 +361,12 @@ class MyView:
                 value_dict = {}
 
                 for index, entry in enumerate(entries):
-
                     # if index == 0:
                     #     value_dict[keys[index]] = entry.strip()
                     # else:
                     value_dict[keys[index]] = float(entry.strip())
 
                 self.data.append(value_dict)
-
-
-        # get min and max default values
-        min_x = sys.float_info.max
-        max_x = sys.float_info.min
-        min_y = sys.float_info.max
-        max_y = sys.float_info.min
-        for data_point in self.data:
-            if data_point['x'] < min_x:
-                min_x = data_point['x']
-            elif data_point['x'] > max_x:
-                max_x = data_point['x']
-            if data_point['y'] < min_y:
-                min_y = data_point['y']
-            elif data_point['y'] > max_y:
-                max_y = data_point['y']
-
-        self.entMinX.delete(0, "end")
-        self.entMinX.insert(0, min_x)
-        self.entMaxX.delete(0, "end")
-        self.entMaxX.insert(0, max_x)
-        self.entMinY.delete(0, "end")
-        self.entMinY.insert(0, min_y)
-        self.entMaxY.delete(0, "end")
-        self.entMaxY.insert(0, max_y)
 
         return True
 
