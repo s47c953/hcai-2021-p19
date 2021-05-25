@@ -40,3 +40,5 @@ def preparePlotTargets(data: [dict], x_key: str, y_key: str, inverse_x: bool, in
         plot_targets.append({"x": target_x, "y": target_y, "val": point_value, "color": color, "is_training_point": is_training_point})
 
     return plot_targets, value_sum
+
+

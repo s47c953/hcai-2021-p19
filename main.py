@@ -12,154 +12,50 @@ import os.path as path
 
 import AggregationFunction
 import UITools
+import filehandler
+import model
+import view
 
 
 # Trash code
-class MyView:
-    btn_width = 10
+class Main:
+
+    main_view: view.View
 
     def __init__(self):
-        self.data = []
+        # data fields
+        self.input_data = None
+        self.bounds = None
+        self.normalized_data = None
 
-        self.root = tk.Tk()
-        self.root.title("Project 19")
-        self.root.geometry("800x600")
+        # view
+        self.main_view = view.View()
 
-        self.selected_index = -1
+        # button callbacks
+        self.main_view.btnCalcLR["command"] = self.calc_lambdaR
+        self.main_view.btnLoadFile["command"] = self.load
+        self.main_view.btnChangeValue["command"] = self.changeInputData
 
-        # IDs of eventhandle, needed to be unregistered on new plot
-        self.hoover_cid = None
-        self.click_cid = None
+    def run(self):
+        self.main_view.run()
 
-        # Input
-        self.containerInput = tk.Frame(master=self.root, width=150)
+    def load(self):
 
-        # file loading elements
-        self.txtFileName = tk.Label(master=self.containerInput, text="File Name")
-        self.btnLoadFile = tk.Button(master=self.containerInput,
-                                     text="Load File",
-                                     width=self.btn_width,
-                                     command=self.open_file)
-        self.btnLoadFile.pack()
-        self.txtFileName.pack()
+        # 1. load data
+        data, bounds = filehandler.open_file(self.main_view.txtFileName)
 
-        # Aggregation Dropdown
-        self.aggregationPopupValue = tk.StringVar(self.containerInput)
-        # Dictionary with options
-        choices = {'Lukasiewicz', 'MinMax', 'TnormTconorm'}
-        self.aggregationPopupValue.set('Lukasiewicz')  # set the default option
+        # 2. normalize data
+        normalized = model.normalizeInputData(data, bounds)
 
-        self.aggregationPopup = tk.OptionMenu(self.containerInput, self.aggregationPopupValue, *choices)
-        txtAggregationLabel = tk.Label(master=self.containerInput, text="Aggregation Function")
-        txtAggregationLabel.pack()
-        self.aggregationPopup.pack()
+        # 3. store on class member
+        self.input_data = data
+        self.bounds = bounds
+        self.normalized_data = normalized
 
-        # lambda and r
-        self.gridLambdaR = tk.Frame(master=self.containerInput)
-        tk.Label(master=self.gridLambdaR, text="l: ").grid(row=0, column=0)
-        tk.Label(master=self.gridLambdaR, text="r: ").grid(row=1, column=0)
-        tk.Label(master=self.gridLambdaR, text="mean error l: ").grid(row=2, column=0)
-        tk.Label(master=self.gridLambdaR, text="mean error r: ").grid(row=3, column=0)
-        self.entK = tk.Entry(master=self.gridLambdaR, width=6)
-        self.entK.insert(0, 1.0)
-        self.entK.grid(row=0, column=1)
-        self.entR = tk.Entry(master=self.gridLambdaR, width=6)
-        self.entR.insert(0, 1.0)
-        self.entR.grid(row=1, column=1)
-        self.entErrorL = tk.Entry(master=self.gridLambdaR, width=6)
-        self.entErrorL.insert(0, 0.0)
-        self.entErrorL.grid(row=2, column=1)
-        self.entErrorR = tk.Entry(master=self.gridLambdaR, width=6)
-        self.entErrorR.insert(0, 0.0)
-        self.entErrorR.grid(row=3, column=1)
-        self.gridLambdaR.pack()
-
-        # calc lambda and r
-        self.btnCalcLR = tk.Button(master=self.containerInput,
-                                   text="calc l r",
-                                   width=self.btn_width,
-                                   command=self.calc_lambdaR)
-        self.btnCalcLR.pack()
-
-        # plotting trigger button
-        self.btnPlot = tk.Button(master=self.containerInput,
-                                 text="Plot",
-                                 width=self.btn_width,
-                                 command=lambda: self.plot("x", "y"))
-        self.btnPlot.pack()
-
-        # clear data trigger button
-        self.btnClear = tk.Button(master=self.containerInput,
-                                  text="Clear",
-                                  width=self.btn_width,
-                                  command=self.clear)
-        self.btnClear.pack()
-
-        # inverting checkboxes
-        self.invertX = tkinter.BooleanVar()
-        self.cbInvertX = tk.Checkbutton(master=self.containerInput, text="X Inverted", variable=self.invertX)
-        self.invertY = tkinter.BooleanVar()
-        self.cbInvertY = tk.Checkbutton(master=self.containerInput, text="Y Inverted", variable=self.invertY)
-        self.cbInvertX.pack()
-        self.cbInvertY.pack()
-
-        # user input for points
-        self.gridInput = tk.Frame(master=self.containerInput)
-        self.txtInputX = tk.Label(master=self.gridInput, text="X")
-        self.txtInputY = tk.Label(master=self.gridInput, text="Y")
-        self.txtInputSol = tk.Label(master=self.gridInput, text="Sol")
-        self.entInputX = tk.Entry(master=self.gridInput, width=6)
-        self.entInputY = tk.Entry(master=self.gridInput, width=6)
-        self.entInputSol = tk.Entry(master=self.gridInput, width=6)
-        self.txtInputX.grid(row=0, column=0)
-        self.txtInputY.grid(row=1, column=0)
-        self.txtInputSol.grid(row=2, column=0)
-        self.entInputX.grid(row=0, column=1)
-        self.entInputY.grid(row=1, column=1)
-        self.entInputSol.grid(row=2, column=1)
-        self.gridInput.pack(fill=tk.X, anchor=tk.NW)
-
-        self.btnAddValue = tk.Button(master=self.containerInput,
-                                     text="Add",
-                                     width=self.btn_width,
-                                     command=self.addUserInputData)
-
-        self.btnChangeValue = tk.Button(master=self.containerInput,
-                                        text="Change",
-                                        width=self.btn_width,
-                                        command=self.changeInputData)
-        self.btnAddValue.pack()
-        self.btnChangeValue.pack()
-
-        # sum of all nodes
-        self.gridSum = tk.Frame(master=self.containerInput)
-        tk.Label(master=self.gridSum, text="Sum: ").grid(row=0, column=0)
-        self.txtSumValue = tk.StringVar()
-        self.txtSumValue.set(0)
-        lblSumValue = tk.Label(master=self.gridSum, textvariable=self.txtSumValue)
-        lblSumValue.grid(row=0, column=1)
-        self.gridSum.pack(fill=tk.X, anchor=tk.NW)
-
-        self.containerInput.pack(fill=tk.Y, side=tk.LEFT)
-        self.containerInput.pack_propagate(0)
-
-        # Plot
-        self.containerPlot = tk.Frame(master=self.root)
-        self.containerPlot.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-
-        self.i = tk.Label(master=self.containerPlot, text="The Plot:")
-        self.i.pack()
-
-        self.figurePlot = matplotlib.figure.Figure(figsize=(5, 4), dpi=100)
-        self.targetSubPlot = self.figurePlot.add_subplot(111)
-        self.targetSubPlot.set_xticks(numpy.arange(0, 1.1, 0.1))
-        self.targetSubPlot.set_yticks(numpy.arange(0, 1.1, 0.1))
-
-        self.canvasPlot = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.figurePlot, master=self.containerPlot)
-        self.canvasPlot.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+        return
 
     def changeInputData(self):
-        self.data[self.selected_index]["sol"] = float(self.entInputSol.get())
+        self.data[self.main_view.selected_node_index]["value"] = float(self.entInputSol.get())
 
     def addUserInputData(self):
         x = float(self.entInputX.get())
@@ -312,68 +208,20 @@ class MyView:
         # draw the data
         self.canvasPlot.draw()
 
-    def run(self):
-        self.root.mainloop()
-
     def calc_lambdaR(self):
-        aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.aggregationPopupValue.get())
+        aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.main_view.aggregationPopupValue.get())
         l_mean, r_mean, l, r = aggregation_function.getLambdaR(self.data, 0.0001, 2, 0.0001, 2, 0.0001)
 
-        self.entR.delete(0, "end")
-        self.entR.insert(0, "{:.4f}".format(r))
-        self.entK.delete(0, "end")
-        self.entK.insert(0, "{:.4f}".format(l))
-        self.entErrorL.delete(0, "end")
-        self.entErrorL.insert(0, "{:.4f}".format(l_mean))
-        self.entErrorR.delete(0, "end")
-        self.entErrorR.insert(0, "{:.4f}".format(r_mean))
+        self.main_view.entR.delete(0, "end")
+        self.main_view.entR.insert(0, "{:.4f}".format(r))
+        self.main_view.entK.delete(0, "end")
+        self.main_view.entK.insert(0, "{:.4f}".format(l))
+        self.main_view.entErrorL.delete(0, "end")
+        self.main_view.entErrorL.insert(0, "{:.4f}".format(l_mean))
+        self.main_view.entErrorR.delete(0, "end")
+        self.main_view.entErrorR.insert(0, "{:.4f}".format(r_mean))
         pass
-
-    # source: https://realpython.com/python-gui-tkinter/#building-a-text-editor-example-app
-    def open_file(self) -> bool:
-
-        # clearing is now done explicit via UI
-        # self.data.clear()
-        """Open a file for editing."""
-        filepath = tkFile.askopenfilename(
-            filetypes=[("CSV Files", "*.csv"), ("All Files", "*.*")]
-        )
-
-        if not filepath:
-            self.txtFileName.config(text="File not found!")
-            return False
-
-        # self.p.config(text=path.basename(filepath))
-        self.txtFileName["text"] = "File Name: " + path.basename(filepath)
-
-        with open(filepath, "r") as input_file:
-            file = input_file.readlines()
-
-            keys: []
-
-            for lineNr, line in enumerate(file):
-                entries = line.strip().split(", ")
-
-                if lineNr == 0:
-                    keys = entries
-                    continue
-
-                value_dict = {}
-
-                for index, entry in enumerate(entries):
-                    # if index == 0:
-                    #     value_dict[keys[index]] = entry.strip()
-                    # else:
-                    value_dict[keys[index]] = float(entry.strip())
-
-                self.data.append(value_dict)
-
-        return True
-
-
-def main():
-    MyView().run()
 
 
 if __name__ == "__main__":
-    main()
+    Main().run()
