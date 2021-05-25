@@ -1,4 +1,3 @@
-import tkinter
 import tkinter.filedialog as tkFile
 import tkinter.ttk
 import tkinter as tk
@@ -33,6 +32,13 @@ class View:
                                      width=self.btn_width)
         self.btnLoadFile.pack()
         self.txtFileName.pack()
+
+        # Set keys
+        self.btnQueryWindow = tk.Button(master=self.containerInput,
+                                       text="Query",
+                                       width=self.btn_width)
+        self.btnQueryWindow["command"] = self.open_query_window
+        self.btnQueryWindow.pack()
 
         # Aggregation Dropdown
         self.aggregationPopupValue = tk.StringVar(self.containerInput)
@@ -143,6 +149,12 @@ class View:
 
         self.canvasPlot = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.figurePlot, master=self.containerPlot)
         self.canvasPlot.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+    def open_query_window(self):
+        # Query Window
+        queryWindow = tk.Toplevel()
+        queryWindow.title("Query")
+        queryWindow.geometry("300x150")
 
     def run(self):
         self.root.mainloop()
