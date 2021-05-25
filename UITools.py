@@ -1,12 +1,17 @@
 
 
-def preparePlotTargets(data: [dict], x_key: str, y_key: str, inverse_x: bool, inverse_y: bool, aggregation_function, l: float, r: float) -> ([dict], float):
+def preparePlotTargets(data: [dict], inverse_x: bool, inverse_y: bool, aggregation_function, l: float, r: float) -> ([dict], float):
+
+    #TODO: apply query
+    x_key = "x"
+    y_key = "y"
+
     plot_targets = []
     value_sum = 0.0
     for val in data:
         target_x = val[x_key]
         target_y = val[y_key]
-        is_training_point = "sol" in val
+        is_training_point = "value" in val
 
         # inverse for plot if necessary
         if inverse_x:

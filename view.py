@@ -158,3 +158,112 @@ class View:
 
     def run(self):
         self.root.mainloop()
+
+    def plot(self, plot_targets: [], data: [], aggregation_function, l, r):
+        self.targetSubPlot.clear()
+
+        # prepare lists for each axis and the color
+        x_targets = []
+        y_targets = []
+        color_targets = []
+        border_targets = []
+        for i, target in enumerate(plot_targets):
+            x_targets.append(target["x"])
+            y_targets.append(target["y"])
+            color_targets.append(target["color"])
+            if i == self.selected_node_index:
+                border_targets.append("blue")
+            elif target["is_training_point"]:
+                border_targets.append("white")
+            else:
+                border_targets.append("black")
+
+        # plot scatter plot
+        sc = self.targetSubPlot.scatter(x_targets, y_targets, color=color_targets, edgecolors=border_targets)
+
+        # create annotation object and hide it
+        annot = self.targetSubPlot.annotate("", xy=(0, 0), xytext=(20, 20), textcoords="offset points",
+                                            bbox=dict(boxstyle="round", fc="w"),
+                                            arrowprops=dict(arrowstyle="->"))
+        annot.set_visible(False)
+
+        # hover event for nodes
+        def on_plot_hover(event):
+            if event.inaxes == self.targetSubPlot:
+                cont, ind = sc.contains(event)
+                if cont:
+                    index = ind["ind"][0]
+                    # get correct value
+                    value = plot_targets[index]["val"]
+                    if "value" in data[index]:
+                        target = data[index]["value"]
+                    else:
+                        target = "not defined"
+
+                    # set annotation position
+                    pos = sc.get_offsets()[index]
+                    annot.xy = pos
+
+                    # set annotation text
+                    annot.set_text(f"{pos}\ntarget: {target}\ncalculated: {value}")
+                    annot.get_bbox_patch().set_alpha(0.4)
+
+                    # set visible and redraw
+                    annot.set_visible(True)
+                    self.canvasPlot.draw_idle()
+                else:
+                    # hide annotation and redraw
+                    annot.set_visible(False)
+                    self.canvasPlot.draw_idle()
+
+        def on_node_click(event):
+            if event.inaxes == self.targetSubPlot:
+                cont, ind = sc.contains(event)
+                if cont:
+                    # get correct value
+                    index = ind["ind"][0]
+                    x = plot_targets[index]["x"]
+                    y = plot_targets[index]["y"]
+                    if "value" in data[index]:
+                        sol = data[index]["value"]
+                    else:
+                        sol = -1
+
+                    self.entInputX.delete(0, "end")
+                    self.entInputX.insert(0, "{:.4f}".format(x))
+                    self.entInputY.delete(0, "end")
+                    self.entInputY.insert(0, "{:.4f}".format(y))
+                    self.entInputSol.delete(0, "end")
+                    self.entInputSol.insert(0, "{:.4f}".format(sol))
+                    self.selected_index = index
+                    self.plot(plot_targets, data, aggregation_function)
+
+        # set on hover event
+        if self.hoover_cid:
+            self.canvasPlot.mpl_disconnect(self.hoover_cid)
+        if self.click_cid:
+            self.canvasPlot.mpl_disconnect(self.click_cid)
+        self.hoover_cid = self.canvasPlot.mpl_connect('motion_notify_event', on_plot_hover)
+        self.click_cid = self.canvasPlot.mpl_connect('button_press_event', on_node_click)
+
+        self.targetSubPlot.set_xlim(0, 1)
+        self.targetSubPlot.set_ylim(0, 1)
+        self.targetSubPlot.set_xlim(-0.05, 1.05)
+        self.targetSubPlot.set_ylim(-0.05, 1.05)
+
+        # draw lines for the 4 sections
+        marker_x_yes, marker_y_yes, marker_x_no, marker_y_no = aggregation_function.getMarker(l)
+        self.targetSubPlot.axhline(y=0.5, color='black', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.axhline(y=0, color='gray', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.axhline(y=1, color='gray', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.axvline(x=0.5, color='black', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.axvline(x=0, color='gray', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.axvline(x=1, color='gray', linestyle='dotted', linewidth=1)
+        # self.targetSubPlot.plot([0, 0.5], [0.5, 0], color='black', linestyle='dotted', linewidth=1)
+
+        # draw yes-no borders
+        self.targetSubPlot.plot(marker_x_yes, marker_y_yes, color='black', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.plot(marker_x_no, marker_y_no, color='black', linestyle='dotted', linewidth=1)
+
+        # draw the data
+        self.canvasPlot.draw()

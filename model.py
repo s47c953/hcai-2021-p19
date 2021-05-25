@@ -8,6 +8,7 @@ def normalizeInputData(data: [{}], bounds: {}) -> [{}]:
         row_result = {}
         for key, value in row.items():
             if key == "value":
+                row_result[key] = value
                 break
             target_bound_min = bounds[key]["min"]
             target_bound_max = bounds[key]["max"]
@@ -22,7 +23,6 @@ def normalizeInputData(data: [{}], bounds: {}) -> [{}]:
 
             normalize_value = ((temp_value - target_bound_min) / (target_bound_max - target_bound_min))
             row_result[key] = normalize_value
-
         result.append(row_result)
 
     return result
