@@ -36,12 +36,13 @@ def open_file(text_label: Label) -> (bool, [], {}, []):
         bounds: {}
 
         for lineNr, line in enumerate(file):
-            entries = line.replace(" ", "").replace("\n", "").split(",")
 
             if lineNr == 0:
+                entries = line.replace("\n", "").split(",")
                 keys = entries
                 continue
 
+            entries = line.replace(" ", "").replace("\n", "").split(",")
             if lineNr == 1:
                 bounds = parseBoundaries(keys, entries)
                 continue
