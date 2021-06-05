@@ -161,7 +161,7 @@ class View:
     def run(self):
         self.root.mainloop()
 
-    def plot(self, plot_targets: [], data: [], aggregation_function, l, r):
+    def plot(self, plot_targets: [], data: [], raw_data: [], aggregation_function, l, r):
         self.targetSubPlot.clear()
 
         # prepare lists for each axis and the color
@@ -201,13 +201,21 @@ class View:
                         target = data[index]["value"]
                     else:
                         target = "not defined"
+                    if "label" in raw_data[index]:
+                        label = raw_data[index]["label"]
+                    else:
+                        label = "undefined"
 
                     # set annotation position
                     pos = sc.get_offsets()[index]
                     annot.xy = pos
 
                     # set annotation text
-                    annot.set_text(f"{pos}\ntarget: {target}\ncalculated: {value}")
+                    text = f"{pos}\ntarget: {target}\ncalculated: {value}\n"
+                    for key in raw_data[index]:
+                        text += f"{key}: {raw_data[index][key]}\n"
+
+                    annot.set_text(text)
                     annot.get_bbox_patch().set_alpha(0.4)
 
                     # set visible and redraw
@@ -238,7 +246,7 @@ class View:
                     self.entInputSol.delete(0, "end")
                     self.entInputSol.insert(0, "{:.4f}".format(sol))
                     self.selected_index = index
-                    self.plot(plot_targets, data, aggregation_function)
+                    self.plot(plot_targets, data, raw_data, aggregation_function)
 
         # set on hover event
         if self.hoover_cid:

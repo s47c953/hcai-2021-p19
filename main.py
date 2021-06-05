@@ -96,11 +96,11 @@ class Main:
 
         # plot the sum of values
         self.main_view.txtSumValue.set("{:.4f}".format(value_sum))
-        self.main_view.plot(plot_targets, self.normalized_data, aggregation_function, l, r)
+        self.main_view.plot(plot_targets, self.normalized_data, self.input_data, aggregation_function, l, r)
 
     def calc_lambdaR(self):
         aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.main_view.aggregationPopupValue.get())
-        l_mean, r_mean, l, r = aggregation_function.getLambdaR(self.data, 0.0001, 2, 0.0001, 2, 0.0001)
+        l_mean, r_mean, l, r = aggregation_function.getLambdaR(self.normalized_data, 0.0001, 2, 0.0001, 2, 0.0001)
 
         self.main_view.entR.delete(0, "end")
         self.main_view.entR.insert(0, "{:.4f}".format(r))
