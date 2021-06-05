@@ -11,7 +11,6 @@ from AxisQueryView import AxisQueryView
 class View:
 
     btn_width = 10
-    data_loaded = False
 
     def __init__(self):
 
@@ -41,7 +40,6 @@ class View:
         self.btnQueryWindow = tk.Button(master=self.containerInput,
                                         text="Query",
                                         width=self.btn_width)
-        self.btnQueryWindow["command"] = self.open_query_window
         self.btnQueryWindow.pack()
 
         # Aggregation Dropdown
@@ -153,10 +151,6 @@ class View:
 
         self.canvasPlot = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.figurePlot, master=self.containerPlot)
         self.canvasPlot.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-
-    def open_query_window(self):
-        if self.data_loaded:
-            self.aqView.open_query_window()
 
     def run(self):
         self.root.mainloop()

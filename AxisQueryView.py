@@ -86,18 +86,59 @@ class AxisQueryView:
 
         container_modes.pack(fill=tk.X)
 
+    def createKeyEntries(self, keys: []):
+        container_keys = tk.Frame(self.queryWindow, width=150)
+        container_keys.rowconfigure(0, minsize=50)
+        container_keys.columnconfigure(0, minsize=50)
+
+        label_mode = tk.Label(container_keys,
+                              text="Keys:",
+                              font=("Arial", 14))
+        label_mode.grid(row=0, column=0, sticky=tk.W)
+
+        row = 1
+        column = 0
+        self.key_selection = {str: tk.IntVar}
+        for key in keys:
+
+            if column == 4:
+                row += 1
+                column = 0
+
+            key_var = tk.IntVar()
+            self.key_selection[key] = key_var
+
+            btn = tk.Checkbutton(container_keys,
+                                 text=key,
+                                 variable=key_var,
+                                 wraplength=150,
+                                 onvalue=1,
+                                 offvalue=0)
+            btn.grid(row=row, column=column, sticky=tk.W)
+
+            column += 1
+
+        container_keys.pack()
+
     def open_query_window(self, keys: []):
         # Query Window
         self.queryWindow = tk.Toplevel()
         self.queryWindow.title("Query")
-        self.queryWindow.geometry("300x150")
+        # self.queryWindow.geometry("400x200")
+        self.queryWindow.resizable(width=False, height=False)
 
         self.createAxisInputs()
         self.createModeInputs()
+        self.createKeyEntries(keys)
 
         def test_btn():
             self.label_testAxis["text"] = self.axisSelection.get()
             self.label_testMode["text"] = self.modeSelection.get()
+            for key in keys:
+                text = ""
+                if self.key_selection[key].get() == 1:
+                    text += key + " "
+                self.label_testKeys["text"] = text
 
         test = tk.Button(self.queryWindow,
                          text="test",
@@ -109,3 +150,5 @@ class AxisQueryView:
         self.label_testAxis.pack()
         self.label_testMode = tk.Label(self.queryWindow)
         self.label_testMode.pack()
+        self.label_testKeys = tk.Label(self.queryWindow)
+        self.label_testKeys.pack()

@@ -21,6 +21,7 @@ import view
 class Main:
 
     main_view: view.View
+    data_loaded = False
 
     def __init__(self):
         # data fields
@@ -39,6 +40,7 @@ class Main:
         self.main_view.btnLoadFile[cmnd] = self.load
         self.main_view.btnChangeValue[cmnd] = self.changeInputData
         self.main_view.btnPlot[cmnd] = self.plot
+        self.main_view.btnQueryWindow[cmnd] = self.open_query_window
 
     def run(self):
         self.main_view.run()
@@ -51,7 +53,7 @@ class Main:
         if not res:
             return
 
-        self.main_view.data_loaded = True
+        self.data_loaded = True
 
         # 2. normalize data
         normalized = model.normalizeInputData(data, bounds)
@@ -99,6 +101,10 @@ class Main:
         # plot the sum of values
         self.main_view.txtSumValue.set("{:.4f}".format(value_sum))
         self.main_view.plot(plot_targets, self.normalized_data, self.input_data, aggregation_function, l, r)
+
+    def open_query_window(self):
+        if self.data_loaded:
+            self.main_view.aqView.open_query_window(self.keys)
 
     def calc_lambdaR(self):
         aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.main_view.aggregationPopupValue.get())
