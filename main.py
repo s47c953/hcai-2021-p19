@@ -66,7 +66,7 @@ class Main:
         return
 
     def changeInputData(self):
-        self.normalized_data[self.main_view.selected_node_index]["value"] = float(self.main_view.entInputSol.get())
+        self.aggregated_data[self.main_view.selected_node_index]["value"] = float(self.main_view.entInputSol.get())
 
     def addUserInputData(self):
         x = float(self.main_view.entInputX.get())
@@ -94,7 +94,7 @@ class Main:
 
         x_keys = self.main_view.aqView.keys_x
         y_keys = self.main_view.aqView.keys_y
-        self.aggregated_data = model.aggregateData(self.normalized_data, x_keys, y_keys, "mostof", "mostof", 0.5, 0.85)
+        self.aggregated_data = model.aggregateData(self.normalized_data, x_keys, y_keys, "mostof", "mostof", 0.3, 0.9)
 
         # calculate sum of values for plotting
         plot_targets, value_sum = UITools.preparePlotTargets(self.aggregated_data, False, False,
