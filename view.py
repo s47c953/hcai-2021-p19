@@ -5,10 +5,13 @@ import matplotlib.figure
 import matplotlib.backends.backend_tkagg
 import numpy
 
+from AxisQueryView import AxisQueryView
+
 
 class View:
 
     btn_width = 10
+    data_loaded = False
 
     def __init__(self):
 
@@ -34,9 +37,10 @@ class View:
         self.txtFileName.pack()
 
         # Set keys
+        self.aqView = AxisQueryView()
         self.btnQueryWindow = tk.Button(master=self.containerInput,
-                                       text="Query",
-                                       width=self.btn_width)
+                                        text="Query",
+                                        width=self.btn_width)
         self.btnQueryWindow["command"] = self.open_query_window
         self.btnQueryWindow.pack()
 
@@ -151,10 +155,8 @@ class View:
         self.canvasPlot.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
     def open_query_window(self):
-        # Query Window
-        queryWindow = tk.Toplevel()
-        queryWindow.title("Query")
-        queryWindow.geometry("300x150")
+        if self.data_loaded:
+            self.aqView.open_query_window()
 
     def run(self):
         self.root.mainloop()

@@ -45,7 +45,12 @@ class Main:
     def load(self):
 
         # 1. load data
-        data, bounds = filehandler.open_file(self.main_view.txtFileName)
+        res, data, bounds = filehandler.open_file(self.main_view.txtFileName)
+
+        if not res:
+            return
+
+        self.main_view.data_loaded = True
 
         # 2. normalize data
         normalized = model.normalizeInputData(data, bounds)

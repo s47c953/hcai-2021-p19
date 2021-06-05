@@ -13,7 +13,7 @@ def parseBoundaries(keys: [str], bounds: [str]) -> {}:
     return result
 
 
-def open_file(text_label: Label) -> ([], {}):
+def open_file(text_label: Label) -> (bool, [], {}):
 
     """Open a file for editing."""
     # source: https://realpython.com/python-gui-tkinter/#building-a-text-editor-example-app
@@ -22,9 +22,9 @@ def open_file(text_label: Label) -> ([], {}):
     )
 
     # Should not be possible:
-    # if not filepath:
-    #     textLabel.config(text="File not found!")
-    #     return False
+    if not filepath:
+        text_label.config(text="File not found!")
+        return False, [], {}
 
     text_label["text"] = "File Name: " + path.basename(filepath)
 
@@ -53,4 +53,4 @@ def open_file(text_label: Label) -> ([], {}):
 
             result.append(value_dict)
 
-    return result, bounds
+    return True, result, bounds
