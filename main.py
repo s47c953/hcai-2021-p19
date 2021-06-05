@@ -28,6 +28,7 @@ class Main:
         self.bounds = None
         self.normalized_data = None
         self.data_coordination = None
+        self.keys = None
 
         # view
         self.main_view = view.View()
@@ -45,7 +46,7 @@ class Main:
     def load(self):
 
         # 1. load data
-        res, data, bounds = filehandler.open_file(self.main_view.txtFileName)
+        res, data, bounds, keys = filehandler.open_file(self.main_view.txtFileName)
 
         if not res:
             return
@@ -59,6 +60,7 @@ class Main:
         self.input_data = data
         self.bounds = bounds
         self.normalized_data = normalized
+        self.keys = keys
 
         return
 
