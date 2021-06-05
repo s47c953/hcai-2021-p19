@@ -155,7 +155,7 @@ class View:
     def run(self):
         self.root.mainloop()
 
-    def plot(self, plot_targets: [], data: [], raw_data: [], aggregation_function, l, r):
+    def plot(self, plot_targets: [], data: [], aggregation_function, l, r):
         self.targetSubPlot.clear()
 
         # prepare lists for each axis and the color
@@ -191,12 +191,12 @@ class View:
                     index = ind["ind"][0]
                     # get correct value
                     value = plot_targets[index]["val"]
-                    if "value" in raw_data[index]:
-                        target = raw_data[index]["value"]
+                    if "value" in data[index]:
+                        target = data[index]["value"]
                     else:
                         target = "not defined"
-                    if "label" in raw_data[index]:
-                        label = raw_data[index]["label"]
+                    if "label" in data[index]:
+                        label = data[index]["label"]
                     else:
                         label = "undefined"
 
@@ -226,8 +226,8 @@ class View:
                     index = ind["ind"][0]
                     x = plot_targets[index]["x"]
                     y = plot_targets[index]["y"]
-                    if "value" in raw_data[index]:
-                        sol = raw_data[index]["value"]
+                    if "value" in data[index]:
+                        sol = data[index]["value"]
                     else:
                         sol = -1
 
@@ -238,7 +238,7 @@ class View:
                     self.entInputSol.delete(0, "end")
                     self.entInputSol.insert(0, "{:.4f}".format(sol))
                     self.selected_node_index = index
-                    self.plot(plot_targets, data, raw_data, aggregation_function, l, r)
+                    self.plot(plot_targets, data, aggregation_function, l, r)
 
         # set on hover event
         if self.hoover_cid:

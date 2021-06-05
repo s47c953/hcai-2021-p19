@@ -13,6 +13,7 @@ def normalizeInputData(data: [{}], bounds: {}) -> [{}]:
                 continue
 
             if isinstance(value, str):
+                row_result[key] = value
                 continue
 
             target_bound_min = bounds[key]["min"]

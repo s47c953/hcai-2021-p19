@@ -25,9 +25,9 @@ class Main:
 
     def __init__(self):
         # data fields
-        self.input_data = None
         self.bounds = None
         self.normalized_data = None
+        self.aggregated_data = None
         self.data_coordination = None
         self.keys = None
 
@@ -59,7 +59,6 @@ class Main:
         normalized = model.normalizeInputData(data, bounds)
 
         # 3. store on class member
-        self.input_data = data
         self.bounds = bounds
         self.normalized_data = normalized
         self.keys = keys
@@ -77,7 +76,6 @@ class Main:
         self.plot()
 
     def clear(self):
-        self.input_data.clear()
         self.bounds.clear()
         self.normalized_data.clear()
         self.data_coordination.clear()
@@ -96,15 +94,15 @@ class Main:
 
         x_keys = self.main_view.aqView.keys_x
         y_keys = self.main_view.aqView.keys_y
-        aggr_data = model.aggregateData(self.normalized_data, x_keys, y_keys, "mostof", "mostof", 0.5, 0.85)
+        self.aggregated_data = model.aggregateData(self.normalized_data, x_keys, y_keys, "mostof", "mostof", 0.5, 0.85)
 
         # calculate sum of values for plotting
-        plot_targets, value_sum = UITools.preparePlotTargets(aggr_data, False, False,
+        plot_targets, value_sum = UITools.preparePlotTargets(self.aggregated_data, False, False,
                                                              aggregation_function, l, r)
 
         # plot the sum of values
         self.main_view.txtSumValue.set("{:.4f}".format(value_sum))
-        self.main_view.plot(plot_targets, self.normalized_data, self.input_data, aggregation_function, l, r)
+        self.main_view.plot(plot_targets, self.normalized_data, aggregation_function, l, r)
 
     def open_query_window(self):
         if self.data_loaded:
@@ -112,7 +110,7 @@ class Main:
 
     def calc_lambdaR(self):
         aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.main_view.aggregationPopupValue.get())
-        l_mean, r_mean, l, r = aggregation_function.getLambdaR(self.normalized_data, 0.0001, 2, 0.0001, 2, 0.0001)
+        l_mean, r_mean, l, r = aggregation_function.getLambdaR(self.aggregated_data, 0.0001, 2, 0.0001, 2, 0.0001)
 
         self.main_view.entR.delete(0, "end")
         self.main_view.entR.insert(0, "{:.4f}".format(r))
