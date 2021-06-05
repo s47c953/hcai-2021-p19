@@ -92,8 +92,14 @@ class Main:
         aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(
             self.main_view.aggregationPopupValue.get())
 
+        x_keys = ["Distance Schools", "Distance Grocery Shop", "Distance Motorway", "Distance Public Transport"]
+        y_keys = ["Size", "Garten Size", "Rooms", "Price"]
+        # x_keys = ["P1", "P2", "P3"]
+        # y_keys = ["P4", "P5", "P6", "P7"]
+        aggr_data = model.aggregateData(self.normalized_data, x_keys, y_keys, "mostof", "mostof", 0.5, 0.85)
+
         # calculate sum of values for plotting
-        plot_targets, value_sum = UITools.preparePlotTargets(self.normalized_data, inverse_x, inverse_y,
+        plot_targets, value_sum = UITools.preparePlotTargets(aggr_data, False, False,
                                                              aggregation_function, l, r)
 
         # plot the sum of values

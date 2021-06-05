@@ -41,7 +41,7 @@ def normalizeInputData(data: [{}], bounds: {}) -> [{}]:
 
 
 def aggregateData(data: [], x_keys: [], y_keys: [], x_mode, y_mode, m = None, n = None):
-    if x_mode == "most_of":
+    if x_mode == "mostof":
         x_function = DataAggregation.mostOfAggregation
     elif x_mode == "conjunction":
         x_function = DataAggregation.conjunction
@@ -50,7 +50,7 @@ def aggregateData(data: [], x_keys: [], y_keys: [], x_mode, y_mode, m = None, n 
     else:
         raise Exception("Invalid data aggregation for x")
 
-    if y_mode == "most_of":
+    if y_mode == "mostof":
         y_function = DataAggregation.mostOfAggregation
     elif y_mode == "conjunction":
         y_function = DataAggregation.conjunction
@@ -70,7 +70,7 @@ def aggregateData(data: [], x_keys: [], y_keys: [], x_mode, y_mode, m = None, n 
             y_row.append(data_point[y_key])
 
         x_result = x_function(x_row, m, n)
-        y_result = y_function(x_row, m, n)
+        y_result = y_function(y_row, m, n)
 
         results.append({"x": x_result, "y": y_result})
 
