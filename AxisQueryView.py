@@ -86,7 +86,7 @@ class AxisQueryView:
 
         container_modes.pack(fill=tk.X)
 
-    def open_query_window(self):
+    def open_query_window(self, keys: []):
         # Query Window
         self.queryWindow = tk.Toplevel()
         self.queryWindow.title("Query")

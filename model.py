@@ -1,5 +1,6 @@
 import DataAggregation
 
+
 def normalizeInputData(data: [{}], bounds: {}) -> [{}]:
 
     result = []
