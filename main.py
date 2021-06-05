@@ -91,7 +91,7 @@ class Main:
 
         # plot the sum of values
         self.main_view.txtSumValue.set("{:.4f}".format(value_sum))
-        self.main_view.plot(plot_targets, self.normalized_data, aggregation_function, l, r)
+        self.main_view.plot(plot_targets, self.normalized_data, self.input_data, aggregation_function, l, r)
 
     def calc_lambdaR(self):
         aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.main_view.aggregationPopupValue.get())

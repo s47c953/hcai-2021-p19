@@ -49,7 +49,10 @@ def open_file(text_label: Label) -> ([], {}):
             value_dict = {}
 
             for index, entry in enumerate(entries):
-                value_dict[keys[index]] = float(entry.strip())
+                try:
+                    value_dict[keys[index]] = float(entry.strip())
+                except:
+                    value_dict[keys[index]] = entry.strip()
 
             result.append(value_dict)
 
