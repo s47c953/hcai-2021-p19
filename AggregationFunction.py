@@ -67,7 +67,7 @@ class LukasiewiczAggregationFunction(AggregationFunction):
         no_points = []
 
         for point in data:
-            if 'sol' in point:
+            if 'value' in point:
                 if point['x'] <= 0.5 and point['y'] <= 0.5:
                     no_points.append(point)
                 elif point['x'] <= 0.5 or point['y'] <= 0.5:
@@ -83,7 +83,7 @@ class LukasiewiczAggregationFunction(AggregationFunction):
             error = 0.0
             for point in maybe_points:
                 value = LukasiewiczAggregationFunction._maybeFunction(point['x'], point['y'], 1, r)
-                target_value = point['sol']
+                target_value = point['value']
                 error += abs(value - target_value)
             if error < r_error:
                 r_result = r
@@ -102,11 +102,11 @@ class LukasiewiczAggregationFunction(AggregationFunction):
             error = 0.0
             for point in yes_points:
                 value = LukasiewiczAggregationFunction._yesFunction(point['x'], point['y'], l, 1)
-                target_value = point['sol']
+                target_value = point['value']
                 error += abs(value - target_value)
             for point in no_points:
                 value = LukasiewiczAggregationFunction._noFunction(point['x'], point['y'], l, 1)
-                target_value = point['sol']
+                target_value = point['value']
                 error += abs(value - target_value)
             if error < l_error:
                 l_result = l

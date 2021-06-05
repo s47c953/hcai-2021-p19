@@ -95,7 +95,7 @@ class Main:
 
     def calc_lambdaR(self):
         aggregation_function = AggregationFunction.AggregationFunction.getClassFromString(self.main_view.aggregationPopupValue.get())
-        l_mean, r_mean, l, r = aggregation_function.getLambdaR(self.data, 0.0001, 2, 0.0001, 2, 0.0001)
+        l_mean, r_mean, l, r = aggregation_function.getLambdaR(self.normalized_data, 0.0001, 2, 0.0001, 2, 0.0001)
 
         self.main_view.entR.delete(0, "end")
         self.main_view.entR.insert(0, "{:.4f}".format(r))
