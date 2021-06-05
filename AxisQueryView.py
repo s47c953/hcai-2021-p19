@@ -20,6 +20,8 @@ class AxisQueryView:
         self.key_selection = {str: tk.IntVar}
         self.keys_x = []
         self.keys_y = []
+        self.m: int
+        self.n: int
 
         pass
 
@@ -121,7 +123,76 @@ class AxisQueryView:
 
             column += 1
 
-        container_keys.pack()
+        container_keys.pack(fill=tk.X)
+
+    def createControlInputs(self, keys):
+
+        label_y_axis = tk.Label(self.queryWindow,
+                                text="Selection:",
+                                font=("Arial", 14))
+        label_y_axis.pack()
+
+        str_x_axis = "X-Axis: "
+        label_x_axis = tk.Label(self.queryWindow, text=str_x_axis)
+        label_x_axis.pack()
+
+        str_y_axis = "Y-Axis: "
+        label_y_axis = tk.Label(self.queryWindow, text=str_y_axis)
+        label_y_axis.pack()
+
+        def apply():
+            axis = self.axisSelection.get()
+            mode = self.modeSelection.get()
+            selected_keys = []
+            for key in keys:
+                if self.key_selection[key].get() == 1:
+                    selected_keys.append(key)
+
+                self.key_selection[key].set(0)
+
+            if axis == AXIS_X:
+                self.keys_x = selected_keys
+
+                label_x_axis["text"] = str_x_axis + "mode = " + mode + "; keys = " + str(selected_keys)
+            else:
+                self.keys_y = selected_keys
+                label_y_axis["text"] = str_y_axis + "mode = " + mode + "; keys = " + str(selected_keys)
+
+            if self.entry_m.get() != "":
+                self.m = self.entry_m.get()
+
+            if self.entry_n.get() != "":
+                self.n = self.entry_n.get()
+
+        def close():
+            self.queryWindow.destroy()
+
+        test = tk.Button(self.queryWindow,
+                         text="Apply for Axis",
+                         command=apply)
+        test.pack()
+
+        test = tk.Button(self.queryWindow,
+                         text="Save and Close",
+                         command=close)
+        test.pack()
+
+    def createMostOfControls(self):
+        container_mostof = tk.Frame(self.queryWindow)
+        container_mostof.rowconfigure(0)
+        container_mostof.columnconfigure(0)
+
+        label_y_axis = tk.Label(container_mostof, text="m:")
+        label_y_axis.grid(row=0, column=0)
+        self.entry_m = tk.Entry(container_mostof)
+        self.entry_m.grid(row=0, column=1)
+
+        label_y_axis = tk.Label(container_mostof, text="n:")
+        label_y_axis.grid(row=1, column=0)
+        self.entry_n = tk.Entry(container_mostof)
+        self.entry_n.grid(row=1, column=1)
+
+        container_mostof.pack(fill=tk.X)
 
     def open_query_window(self, keys: []):
         # Query Window
@@ -132,34 +203,7 @@ class AxisQueryView:
 
         self.createAxisInputs()
         self.createModeInputs()
+        self.createMostOfControls()
         self.createKeyEntries(keys)
+        self.createControlInputs(keys)
 
-        str_x_axis = "X-Axis: "
-        label_x_axis = tk.Label(self.queryWindow, text=str_x_axis)
-        label_x_axis.pack()
-
-        str_y_axis = "Y-Axis: "
-        label_y_axis = tk.Label(self.queryWindow, text=str_y_axis)
-        label_y_axis.pack()
-
-        def test_btn():
-            axis = self.axisSelection.get()
-            mode = self.modeSelection.get()
-            selected_keys = []
-            for key in keys:
-                if self.key_selection[key].get() == 1:
-                    selected_keys.append(key)
-
-            if axis == AXIS_X:
-                self.keys_x = selected_keys
-
-                label_x_axis["text"] = str_x_axis + "mode = " + mode + "; keys = " + str(selected_keys)
-            else:
-                self.keys_y = selected_keys
-                label_y_axis["text"] = str_y_axis + "mode = " + mode + "; keys = " + str(selected_keys)
-
-        test = tk.Button(self.queryWindow,
-                         text="Apply for Axis",
-                         width=self.btn_sign_width,
-                         command=test_btn)
-        test.pack()
