@@ -191,8 +191,8 @@ class View:
                     index = ind["ind"][0]
                     # get correct value
                     value = plot_targets[index]["val"]
-                    if "value" in data[index]:
-                        target = data[index]["value"]
+                    if "value" in raw_data[index]:
+                        target = raw_data[index]["value"]
                     else:
                         target = "not defined"
                     if "label" in raw_data[index]:
@@ -205,9 +205,7 @@ class View:
                     annot.xy = pos
 
                     # set annotation text
-                    text = f"{pos}\ntarget: {target}\ncalculated: {value}\n"
-                    for key in raw_data[index]:
-                        text += f"{key}: {raw_data[index][key]}\n"
+                    text = f"{pos}\ntarget: {target}\ncalculated: {value}\nlabel: {label}\n"
 
                     annot.set_text(text)
                     annot.get_bbox_patch().set_alpha(0.4)
@@ -228,8 +226,8 @@ class View:
                     index = ind["ind"][0]
                     x = plot_targets[index]["x"]
                     y = plot_targets[index]["y"]
-                    if "value" in data[index]:
-                        sol = data[index]["value"]
+                    if "value" in raw_data[index]:
+                        sol = raw_data[index]["value"]
                     else:
                         sol = -1
 
@@ -239,8 +237,8 @@ class View:
                     self.entInputY.insert(0, "{:.4f}".format(y))
                     self.entInputSol.delete(0, "end")
                     self.entInputSol.insert(0, "{:.4f}".format(sol))
-                    self.selected_index = index
-                    self.plot(plot_targets, data, raw_data, aggregation_function)
+                    self.selected_node_index = index
+                    self.plot(plot_targets, data, raw_data, aggregation_function, l, r)
 
         # set on hover event
         if self.hoover_cid:

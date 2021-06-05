@@ -17,6 +17,10 @@ class AxisQueryView:
     def __init__(self):
         self.axisSelection = tk.StringVar()
         self.modeSelection = tk.StringVar()
+        self.key_selection = {str: tk.IntVar}
+        self.keys_x = []
+        self.keys_y = []
+
         pass
 
     def createAxisInputs(self):
@@ -98,7 +102,6 @@ class AxisQueryView:
 
         row = 1
         column = 0
-        self.key_selection = {str: tk.IntVar}
         for key in keys:
 
             if column == 4:
@@ -131,24 +134,32 @@ class AxisQueryView:
         self.createModeInputs()
         self.createKeyEntries(keys)
 
+        str_x_axis = "X-Axis: "
+        label_x_axis = tk.Label(self.queryWindow, text=str_x_axis)
+        label_x_axis.pack()
+
+        str_y_axis = "Y-Axis: "
+        label_y_axis = tk.Label(self.queryWindow, text=str_y_axis)
+        label_y_axis.pack()
+
         def test_btn():
-            self.label_testAxis["text"] = self.axisSelection.get()
-            self.label_testMode["text"] = self.modeSelection.get()
+            axis = self.axisSelection.get()
+            mode = self.modeSelection.get()
+            selected_keys = []
             for key in keys:
-                text = ""
                 if self.key_selection[key].get() == 1:
-                    text += key + " "
-                self.label_testKeys["text"] = text
+                    selected_keys.append(key)
+
+            if axis == AXIS_X:
+                self.keys_x = selected_keys
+
+                label_x_axis["text"] = str_x_axis + "mode = " + mode + "; keys = " + str(selected_keys)
+            else:
+                self.keys_y = selected_keys
+                label_y_axis["text"] = str_y_axis + "mode = " + mode + "; keys = " + str(selected_keys)
 
         test = tk.Button(self.queryWindow,
-                         text="test",
+                         text="Apply for Axis",
                          width=self.btn_sign_width,
                          command=test_btn)
         test.pack()
-
-        self.label_testAxis = tk.Label(self.queryWindow)
-        self.label_testAxis.pack()
-        self.label_testMode = tk.Label(self.queryWindow)
-        self.label_testMode.pack()
-        self.label_testKeys = tk.Label(self.queryWindow)
-        self.label_testKeys.pack()
