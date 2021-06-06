@@ -22,9 +22,6 @@ def preparePlotTargets(data: [dict], inverse_x: bool, inverse_y: bool, aggregati
         # get value from aggregation function
         point_value = aggregation_function.perform(target_x, target_y, l, r)
 
-        # add value to dict
-        val['value'] = point_value
-
         # add to sum
         value_sum += point_value
 

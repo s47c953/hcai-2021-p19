@@ -18,10 +18,12 @@ class AxisQueryView:
         self.axisSelection = tk.StringVar()
         self.modeSelection = tk.StringVar()
         self.key_selection = {str: tk.IntVar}
+        self.x_mode = None
+        self.y_mode = None
         self.keys_x = []
         self.keys_y = []
-        self.m: int
-        self.n: int
+        self.m: float
+        self.n: float
 
         pass
 
@@ -152,17 +154,18 @@ class AxisQueryView:
 
             if axis == AXIS_X:
                 self.keys_x = selected_keys
-
+                self.x_mode = mode
                 label_x_axis["text"] = str_x_axis + "mode = " + mode + "; keys = " + str(selected_keys)
             else:
                 self.keys_y = selected_keys
+                self.y_mode = mode
                 label_y_axis["text"] = str_y_axis + "mode = " + mode + "; keys = " + str(selected_keys)
 
             if self.entry_m.get() != "":
-                self.m = self.entry_m.get()
+                self.m = float(self.entry_m.get())
 
             if self.entry_n.get() != "":
-                self.n = self.entry_n.get()
+                self.n = float(self.entry_n.get())
 
         def close():
             self.queryWindow.destroy()

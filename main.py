@@ -30,6 +30,7 @@ class Main:
         self.aggregated_data = None
         self.data_coordination = None
         self.keys = None
+        self.target_values = {}
 
         # view
         self.main_view = view.View()
@@ -66,6 +67,7 @@ class Main:
         return
 
     def changeInputData(self):
+        self.target_values[self.main_view.selected_node_index] = float(self.main_view.entInputSol.get())
         self.aggregated_data[self.main_view.selected_node_index]["value"] = float(self.main_view.entInputSol.get())
 
     def addUserInputData(self):
@@ -83,6 +85,7 @@ class Main:
         self.plot()
 
     def plot(self):
+        self.main_view.selected_node_index = None
         inverse_x = self.main_view.invertX.get()
         inverse_y = self.main_view.invertY.get()
 
@@ -94,7 +97,13 @@ class Main:
 
         x_keys = self.main_view.aqView.keys_x
         y_keys = self.main_view.aqView.keys_y
-        self.aggregated_data = model.aggregateData(self.normalized_data, x_keys, y_keys, "mostof", "mostof", 0.3, 0.9)
+        x_mode = self.main_view.aqView.x_mode
+        y_mode = self.main_view.aqView.y_mode
+        m = self.main_view.aqView.m
+        n = self.main_view.aqView.n
+        self.aggregated_data = model.aggregateData(self.normalized_data, x_keys, y_keys, x_mode, y_mode, m, n)
+        for key, value in self.target_values.items():
+            self.aggregated_data[key]["value"] = value
 
         # calculate sum of values for plotting
         plot_targets, value_sum = UITools.preparePlotTargets(self.aggregated_data, False, False,
@@ -102,7 +111,7 @@ class Main:
 
         # plot the sum of values
         self.main_view.txtSumValue.set("{:.4f}".format(value_sum))
-        self.main_view.plot(plot_targets, self.normalized_data, aggregation_function, l, r)
+        self.main_view.plot(plot_targets, self.aggregated_data, aggregation_function, l, r)
 
     def open_query_window(self):
         if self.data_loaded:
