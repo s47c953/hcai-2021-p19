@@ -61,7 +61,7 @@ class Controller:
 
         plot_targets, value_sum = self.model.preparePlotTargets(self.quantified_data, aggregation_function, l, r)
         self.view.setSumValue(value_sum)
-        self.view.plot(plot_targets, self.quantified_data, aggregation_function, l, r)
+        self.view.plot(plot_targets, self.quantified_data, self.raw_data, aggregation_function, l, r)
 
     def changeTargetValue(self):
         selected_node = self.view.getSelectedNoteIndex()

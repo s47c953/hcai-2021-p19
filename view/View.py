@@ -227,7 +227,7 @@ class View:
         return img
 
 
-    def plot(self, plot_targets: [], data: [], aggregation_function, l, r):
+    def plot(self, plot_targets: [], data: [], raw_data: list, aggregation_function, l, r):
         self.targetSubPlot.clear()
 
         # prepare lists for each axis and the color
@@ -300,6 +300,7 @@ class View:
                 if cont:
                     # get correct value
                     index = ind["ind"][0]
+                    raw_point_data = raw_data[index]
                     x = plot_targets[index]["x"]
                     y = plot_targets[index]["y"]
                     if "value" in data[index]:
