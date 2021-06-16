@@ -202,25 +202,24 @@ class View:
         self.root.mainloop()
 
     def createBackground(self, aggregation_function, l, r):
-        resolution_x = 1000
-        resolution_y = 1000
+        resolution = 250
 
         # gradient between 0 and 1 for 256*256
-        array = numpy.empty((resolution_x, resolution_y, 3), numpy.uint8)
+        array = numpy.empty((resolution, resolution, 3), numpy.uint8)
 
 
-        for y in range(0, resolution_y):
-            for x in range(0, resolution_x):
-                value = aggregation_function.perform(x/1000, y/1000, l, r)
+        for y in range(0, resolution):
+            for x in range(0, resolution):
+                value = aggregation_function.perform(x/resolution, y/resolution, l, r)
                 # add blue color to maybe points
-                # if value != 0 and value != 1:
-                #     blue_val = 44
-                # else:
-                #     blue_val = 00
+                if value != 0 and value != 1:
+                    blue_val = 44
+                else:
+                    blue_val = 00
 
                 red_val = 255 - int(255 * value)
                 green_val = int(255 * value)
-                array[resolution_y-y-1][x] = [red_val, green_val, 0]
+                array[resolution-y-1][x] = [red_val, green_val, blue_val]
 
 
         # Creates PIL image
@@ -250,9 +249,9 @@ class View:
 
 
         img = self.createBackground(aggregation_function, l, r)
-
+        self.targetSubPlot.imshow(img, extent=[0, 1, 0, 1])
         # plot scatter plot
-        sc = self.targetSubPlot.scatter(x_targets, y_targets, color=color_targets, edgecolors=border_targets, face=img)
+        sc = self.targetSubPlot.scatter(x_targets, y_targets, color=color_targets, edgecolors=border_targets)
 
         # create annotation object and hide it
         annot = self.targetSubPlot.annotate("", xy=(0, 0), xytext=(20, 20), textcoords="offset points",
