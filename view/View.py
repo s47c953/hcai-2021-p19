@@ -4,6 +4,7 @@ import tkinter as tk
 import matplotlib.figure
 import matplotlib.backends.backend_tkagg
 import numpy
+from PIL import Image
 
 from view.QuantifierView import QuantifierView
 
@@ -201,6 +202,33 @@ class View:
     def run(self):
         self.root.mainloop()
 
+    def createBackground(self, aggregation_function, l, r):
+        resolution_x = 1000
+        resolution_y = 1000
+
+        # gradient between 0 and 1 for 256*256
+        array = numpy.empty((resolution_x, resolution_y, 3), numpy.uint8)
+
+
+        for y in range(0, resolution_y):
+            for x in range(0, resolution_x):
+                value = aggregation_function.perform(x/1000, y/1000, l, r)
+                # add blue color to maybe points
+                # if value != 0 and value != 1:
+                #     blue_val = 44
+                # else:
+                #     blue_val = 00
+
+                red_val = 255 - int(255 * value)
+                green_val = int(255 * value)
+                array[resolution_y-y-1][x] = [red_val, green_val, 0]
+
+
+        # Creates PIL image
+        img = Image.fromarray(array, 'RGB')
+        return img
+
+
     def plot(self, plot_targets: [], data: [], aggregation_function, l, r):
         self.targetSubPlot.clear()
 
@@ -220,8 +248,12 @@ class View:
             else:
                 border_targets.append("black")
 
+
+
+        img = self.createBackground(aggregation_function, l, r)
+
         # plot scatter plot
-        sc = self.targetSubPlot.scatter(x_targets, y_targets, color=color_targets, edgecolors=border_targets)
+        sc = self.targetSubPlot.scatter(x_targets, y_targets, color=color_targets, edgecolors=border_targets, face=img)
 
         # create annotation object and hide it
         annot = self.targetSubPlot.annotate("", xy=(0, 0), xytext=(20, 20), textcoords="offset points",
