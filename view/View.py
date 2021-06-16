@@ -202,7 +202,7 @@ class View:
         self.root.mainloop()
 
     def createBackground(self, aggregation_function, l, r):
-        resolution = 250
+        resolution = 500
 
         # gradient between 0 and 1 for 256*256
         array = numpy.empty((resolution, resolution, 3), numpy.uint8)
@@ -242,7 +242,7 @@ class View:
             if i == self.selected_node_index:
                 border_targets.append("blue")
             elif target["is_training_point"]:
-                border_targets.append("white")
+                border_targets.append("blue")
             else:
                 border_targets.append("black")
 
@@ -312,7 +312,7 @@ class View:
                     self.entInputSol.delete(0, "end")
                     self.entInputSol.insert(0, "{:.4f}".format(sol))
                     self.selected_node_index = index
-                    self.plot(plot_targets, data, aggregation_function, l, r)
+                    # self.plot(plot_targets, data, aggregation_function, l, r)
 
         # set on hover event
         if self.hoover_cid:

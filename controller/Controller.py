@@ -72,5 +72,5 @@ class Controller:
     def calculateLambdaR(self):
         selected_aggregation_function = self.view.getSelectedAggregationFunction()
         aggregation_function = self.model.getAggregationFunctionFromString(selected_aggregation_function)
-        l_mean, r_mean, l, r = aggregation_function.getLambdaR(self.quantified_data, 0.0001, 2, 0.0001, 2, 0.0001)
+        l_mean, r_mean, l, r = aggregation_function.getLambdaR(self.quantified_data, -2.0, 4.0, 0.0001, 5.0, 0.0001)
         self.view.setLambdaR(l, r, l_mean, r_mean)

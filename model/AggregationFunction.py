@@ -49,30 +49,6 @@ class LukasiewiczAggregationFunction(AggregationFunction):
 
     @staticmethod
     def _maybeFunction(x: float, y: float, l: float, r: float = 1) -> float:
-        # handle case where r is 0 -> geometric mean
-        # if r > 0:
-        #     # everything fine in this case
-        #     return ((x ** r) + (y ** r) - (0.5 ** r)) ** (1 / r)
-        # elif r == 0:
-        #     # r = 0 means we use the geometric mean
-        #     return (x*y) ** (1/2)
-        # else:
-        #     # r < 0 means we handle cases where x or y are 0
-        #     if x == 0:
-        #         x_part = 0
-        #     else:
-        #         x_part = x ** r
-        #     if y == 0:
-        #         y_part = 0
-        #     else:
-        #         y_part = y ** r
-        #
-        #     value = (x_part + y_part - (0.5 ** r)) ** (1/r)
-        #     median = statistics.median([0, 1, value])
-        #     if median == 0 or median == 1:
-        #         return median
-        #     else:
-        #         return median ** (1/r)
         if r == 0:
             # r = 0 means we use the geometric mean
             return (x*y) ** (1/2)
@@ -87,7 +63,6 @@ class LukasiewiczAggregationFunction(AggregationFunction):
             value = ((0.5*(x**r)) + (0.5*(y**r)))**(1/r)
 
         return statistics.median([0,1,value])
-
 
     @staticmethod
     def getMarker(l: float):
