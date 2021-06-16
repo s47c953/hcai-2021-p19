@@ -1,6 +1,7 @@
 from model.QuantifierFunctions import mostOfAggregation, conjunction, disjunction
 from model.AggregationFunction import AggregationFunction
 
+
 class Model:
 
     def __init__(self):

@@ -2,6 +2,7 @@ from model.Model import Model
 from model.Filehandler import open_file
 from view.View import View
 
+
 class Controller:
 
     def __init__(self, model: Model, view: View):

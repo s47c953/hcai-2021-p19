@@ -3,6 +3,7 @@ from model.Model import Model
 from view.View import View
 from controller.Controller import Controller
 
+
 def main():
     # create View
     m = Model()
@@ -11,6 +12,7 @@ def main():
 
     # start application
     v.run()
+
 
 if __name__ == "__main__":
     main()
