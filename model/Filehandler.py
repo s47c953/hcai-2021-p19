@@ -1,4 +1,3 @@
-from tkinter import Label
 import tkinter.filedialog as tkFile
 import os.path as path
 

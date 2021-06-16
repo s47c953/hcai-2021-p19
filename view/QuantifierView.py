@@ -209,4 +209,3 @@ class QuantifierView:
         self.createMostOfControls()
         self.createKeyEntries(keys)
         self.createControlInputs(keys)
-

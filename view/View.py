@@ -1,5 +1,3 @@
-import tkinter.filedialog as tkFile
-import tkinter.ttk
 import tkinter as tk
 import matplotlib.figure
 import matplotlib.backends.backend_tkagg
@@ -7,6 +5,7 @@ import numpy
 from PIL import Image
 
 from view.QuantifierView import QuantifierView
+
 
 class View:
 
