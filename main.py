@@ -1,4 +1,3 @@
-
 from model.Model import Model
 from view.View import View
 from controller.Controller import Controller
