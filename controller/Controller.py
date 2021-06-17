@@ -28,6 +28,8 @@ class Controller:
 
     def loadFile(self):
         label_string, data, bounds, keys = open_file()
+        if not data:
+            return
         self.view.setLabelFileText(label_string)
         normalized_data = self.model.normalizeInputData(data, bounds)
         self.raw_data = data

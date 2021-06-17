@@ -45,6 +45,9 @@ class Model:
         return result
 
     def ApplyQuantifierFunction(self, data: [], x_keys: [], y_keys: [], x_mode, y_mode, m=None, n=None):
+        if not data:
+            return []
+
         if x_mode == "mostof":
             x_function = mostOfAggregation
         elif x_mode == "conjunction":

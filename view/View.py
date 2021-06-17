@@ -40,7 +40,7 @@ class View:
         self.containerInput = tk.Frame(master=self.root, width=150)
 
         # Data loading
-        self.txtFileName = tk.Label(master=self.containerInput, text="File Name")
+        self.txtFileName = tk.Label(master=self.containerInput, text="No File")
         self.btnLoadFile = tk.Button(master=self.containerInput,
                                      text="Load File",
                                      width=self.BUTTON_WIDTH)
@@ -57,7 +57,7 @@ class View:
         # Aggregation Dropdown
         self.aggregationPopupValue = tk.StringVar(self.containerInput)
         # Dictionary with options
-        choices = {'Lukasiewicz', 'MinMax', 'TnormTconorm'}
+        choices = {'Lukasiewicz', 'MinMax', 'TnormTconormGeometric', 'TnormTconormArithmetic'}
         self.aggregationPopupValue.set('Lukasiewicz')  # set the default option
         self.aggregationPopup = tk.OptionMenu(self.containerInput, self.aggregationPopupValue, *choices)
         self.txtAggregationLabel = tk.Label(master=self.containerInput, text="Aggregation Function")
@@ -363,8 +363,8 @@ class View:
         # self.targetSubPlot.plot([0, 0.5], [0.5, 0], color='black', linestyle='dotted', linewidth=1)
 
         # draw yes-no borders
-        self.targetSubPlot.plot(marker_x_yes, marker_y_yes, color='black', linestyle='dotted', linewidth=1)
-        self.targetSubPlot.plot(marker_x_no, marker_y_no, color='black', linestyle='dotted', linewidth=1)
+        self.targetSubPlot.plot(marker_x_yes, marker_y_yes, color='black', linestyle='dotted', linewidth=2)
+        self.targetSubPlot.plot(marker_x_no, marker_y_no, color='black', linestyle='dotted', linewidth=2)
 
         # draw the data
         self.canvasPlot.draw()
