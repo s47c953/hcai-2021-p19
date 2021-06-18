@@ -393,8 +393,8 @@ class View:
                     annot.xy = pos
                     annotation_text += f"{pos}\n"
 
-                    if "value" in raw_data[index]:
-                        data_value = raw_data[index]["value"]
+                    if "value" in data[index]:
+                        data_value = data[index]["value"]
                         annotation_text += f"target: {data_value}\n"
                     else:
                         annotation_text += "target: Not defined\n"
