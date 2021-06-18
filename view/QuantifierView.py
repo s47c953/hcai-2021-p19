@@ -1,14 +1,21 @@
 import tkinter as tk
 
+# Axis Constants
 AXIS_X = "x"
 AXIS_Y = "y"
 
+# Mode Constants
 MODE_CONJUNCTION = "conjunction"
 MODE_DISJUNCTION = "disjunction"
 MODE_MOST_OF = "most_of"
 
 
 class QuantifierView:
+    """ QuantifierView Class
+
+    Class containing the view of the quantifier/query window.
+    """
+
     btn_sign_width = 3
     btn_text_width = 10
 
@@ -17,6 +24,10 @@ class QuantifierView:
     entry_n: tk.Entry
 
     def __init__(self):
+        """ Constructor
+
+        Variables for UI inputs are declared in the constructor.
+        """
         self.axisSelection = tk.StringVar()
         self.modeSelection = tk.StringVar()
         self.key_selection = {str: tk.IntVar}
@@ -30,6 +41,10 @@ class QuantifierView:
         pass
 
     def create_axis_inputs(self):
+        """ Creates the radio buttons for the axis (x, y) to select.
+
+        :return: void
+        """
         container_axis = tk.Frame(master=self.queryWindow, width=150)
         container_axis.rowconfigure(0, minsize=50)
         container_axis.columnconfigure(0, minsize=50)
@@ -54,22 +69,15 @@ class QuantifierView:
         container_axis.pack(fill=tk.X)
 
     def create_mode_inputs(self):
+        """ Creates the radio buttons for the modes:
+        conjunction, disjunction, most_of
+
+        :return: void
+        """
+
         container_modes = tk.Frame(master=self.queryWindow, width=150)
         container_modes.rowconfigure(0, minsize=50)
         container_modes.columnconfigure(0, minsize=50)
-
-        # Button variant
-        # conjunction = tk.Button(master=self.containerInput,
-        #                                 text="⋀",
-        #                                 width=self.btn_sign_width)
-        #
-        # disjunction = tk.Button(master=self.containerInput,
-        #                                 text="⋁",
-        #                                 width=self.btn_sign_width)
-        #
-        # mostof = tk.Button(master=self.containerInput,
-        #                            text="mostOf",
-        #                            width=self.btn_text_width)
 
         # Radio Button variant
         conjunction = tk.Radiobutton(container_modes,
@@ -97,6 +105,11 @@ class QuantifierView:
         container_modes.pack(fill=tk.X)
 
     def create_key_entries(self, keys: []):
+        """ Creates the checkboxes for the keys (attributes) which were gathered from the loaded CSV.
+
+        :param keys: The keys contained in the loaded file.
+        :return: void
+        """
         container_keys = tk.Frame(self.queryWindow, width=150)
         container_keys.rowconfigure(0, minsize=50)
         container_keys.columnconfigure(0, minsize=50)
@@ -130,11 +143,13 @@ class QuantifierView:
         container_keys.pack(fill=tk.X)
 
     def create_control_inputs(self, keys):
+        """ Creates the section showing the selected options for each axis (x, y).
+        The keys (attributes) are used to compare to the selected keys when saving the selection.
 
-        label_y_axis = tk.Label(self.queryWindow,
-                                text="Selection:",
-                                font=("Arial", 14))
-        label_y_axis.pack()
+        :param keys: The keys contained in the loaded file.
+        :return: void
+        """
+        tk.Label(self.queryWindow, text="Selection:", font=("Arial", 14)).pack()
 
         str_x_axis = "X-Axis: "
         label_x_axis = tk.Label(self.queryWindow, text=str_x_axis)
@@ -145,6 +160,10 @@ class QuantifierView:
         label_y_axis.pack()
 
         def apply():
+            """ Sets the selected keys and modes in the main window.
+
+            :return: void
+            """
             axis = self.axisSelection.get()
             mode = self.modeSelection.get()
             selected_keys = []
@@ -170,19 +189,20 @@ class QuantifierView:
                 self.n = float(self.entry_n.get())
 
         def close():
+            """ Closes the query/quantifier window.
+
+            :return: void
+            """
             self.queryWindow.destroy()
 
-        test = tk.Button(self.queryWindow,
-                         text="Apply for Axis",
-                         command=apply)
-        test.pack()
-
-        test = tk.Button(self.queryWindow,
-                         text="Save and Close",
-                         command=close)
-        test.pack()
+        tk.Button(self.queryWindow, text="Apply for Axis", command=apply).pack()
+        tk.Button(self.queryWindow, text="Save and Close", command=close).pack()
 
     def create_most_of_controls(self):
+        """ Creates the m and n inputs needed for the most_of quantifier.
+
+        :return: void
+        """
         container_most_of = tk.Frame(self.queryWindow)
         container_most_of.rowconfigure(0)
         container_most_of.columnconfigure(0)
@@ -200,10 +220,13 @@ class QuantifierView:
         container_most_of.pack(fill=tk.X)
 
     def open_query_window(self, keys: []):
-        # Query Window
+        """ This method creates the window and calls all the methods to create the quantifier/query window UI.
+
+        :param keys: The keys contained in the loaded file.
+        :return: void
+        """
         self.queryWindow = tk.Toplevel()
         self.queryWindow.title("Query")
-        # self.queryWindow.geometry("400x200")
         self.queryWindow.resizable(width=False, height=False)
 
         self.create_axis_inputs()
