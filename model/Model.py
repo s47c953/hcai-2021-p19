@@ -1,4 +1,4 @@
-from model.QuantifierFunctions import mostOfAggregation, conjunction, disjunction
+from model.QuantifierFunctions import most_of_aggregation, conjunction, disjunction
 from model.AggregationFunction import AggregationFunction
 
 
@@ -7,7 +7,8 @@ class Model:
     def __init__(self):
         pass
 
-    def normalizeInputData(self, data: [{}], bounds: {}) -> [{}]:
+    @staticmethod
+    def normalize_input_data(data: [{}], bounds: {}) -> [{}]:
         result = []
         for row in data:
             row_result = {}
@@ -44,12 +45,13 @@ class Model:
 
         return result
 
-    def ApplyQuantifierFunction(self, data: [], x_keys: [], y_keys: [], x_mode, y_mode, m=None, n=None):
+    @staticmethod
+    def apply_quantifier_function(data: [], x_keys: [], y_keys: [], x_mode, y_mode, m=None, n=None):
         if not data:
             return []
 
         if x_mode == "mostof":
-            x_function = mostOfAggregation
+            x_function = most_of_aggregation
         elif x_mode == "conjunction":
             x_function = conjunction
         elif x_mode == "disjunction":
@@ -58,7 +60,7 @@ class Model:
             raise Exception("Invalid data aggregation for x")
 
         if y_mode == "mostof":
-            y_function = mostOfAggregation
+            y_function = most_of_aggregation
         elif y_mode == "conjunction":
             y_function = conjunction
         elif y_mode == "disjunction":
@@ -83,15 +85,18 @@ class Model:
 
         return results
 
-    def restoreTargetValues(self, data, target_values) -> list:
+    @staticmethod
+    def restore_target_values(data, target_values) -> list:
         for key, value in target_values.items():
             data[key]["value"] = value
         return data
 
-    def getAggregationFunctionFromString(self, target: str):
-        return AggregationFunction.getClassFromString(target)
+    @staticmethod
+    def get_aggregation_function_from_string(target: str):
+        return AggregationFunction.get_class_from_string(target)
 
-    def preparePlotTargets(self, data: list, aggregation_function, l: float, r: float) -> (list, float):
+    @staticmethod
+    def prepare_plot_targets(data: list, aggregation_function, lam: float, r: float) -> (list, float):
         plot_targets = []
         value_sum = 0.0
         for val in data:
@@ -100,7 +105,7 @@ class Model:
             is_training_point = "value" in val
 
             # get value from aggregation function
-            point_value = aggregation_function.perform(target_x, target_y, l, r)
+            point_value = aggregation_function.perform(target_x, target_y, lam, r)
 
             # add to sum
             value_sum += point_value
@@ -120,6 +125,8 @@ class Model:
             color = f"#{red_val}{green_val}{blue_val}"
 
             plot_targets.append(
-                {"x": target_x, "y": target_y, "val": point_value, "color": color, "is_training_point": is_training_point})
+                {"x": target_x, "y": target_y, "val": point_value,
+                 "color": color, "is_training_point": is_training_point}
+            )
 
         return plot_targets, value_sum

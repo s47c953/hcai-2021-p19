@@ -7,7 +7,7 @@ def main():
     # create View
     m = Model()
     v = View()
-    c = Controller(m, v)
+    Controller(m, v)
 
     # start application
     v.run()

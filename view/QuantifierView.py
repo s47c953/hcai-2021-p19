@@ -5,7 +5,7 @@ AXIS_Y = "y"
 
 MODE_CONJUNCTION = "conjunction"
 MODE_DISJUNCTION = "disjunction"
-MODE_MOSTOF = "mostof"
+MODE_MOST_OF = "most_of"
 
 
 class QuantifierView:
@@ -13,6 +13,8 @@ class QuantifierView:
     btn_text_width = 10
 
     queryWindow: tk.Toplevel
+    entry_m: tk.Entry
+    entry_n: tk.Entry
 
     def __init__(self):
         self.axisSelection = tk.StringVar()
@@ -27,7 +29,7 @@ class QuantifierView:
 
         pass
 
-    def createAxisInputs(self):
+    def create_axis_inputs(self):
         container_axis = tk.Frame(master=self.queryWindow, width=150)
         container_axis.rowconfigure(0, minsize=50)
         container_axis.columnconfigure(0, minsize=50)
@@ -51,7 +53,7 @@ class QuantifierView:
 
         container_axis.pack(fill=tk.X)
 
-    def createModeInputs(self):
+    def create_mode_inputs(self):
         container_modes = tk.Frame(master=self.queryWindow, width=150)
         container_modes.rowconfigure(0, minsize=50)
         container_modes.columnconfigure(0, minsize=50)
@@ -81,7 +83,7 @@ class QuantifierView:
         mostof = tk.Radiobutton(container_modes,
                                 text="MostOf",
                                 variable=self.modeSelection,
-                                value=MODE_MOSTOF)
+                                value=MODE_MOST_OF)
 
         label_mode = tk.Label(master=container_modes,
                               text="Mode:",
@@ -94,7 +96,7 @@ class QuantifierView:
 
         container_modes.pack(fill=tk.X)
 
-    def createKeyEntries(self, keys: []):
+    def create_key_entries(self, keys: []):
         container_keys = tk.Frame(self.queryWindow, width=150)
         container_keys.rowconfigure(0, minsize=50)
         container_keys.columnconfigure(0, minsize=50)
@@ -127,7 +129,7 @@ class QuantifierView:
 
         container_keys.pack(fill=tk.X)
 
-    def createControlInputs(self, keys):
+    def create_control_inputs(self, keys):
 
         label_y_axis = tk.Label(self.queryWindow,
                                 text="Selection:",
@@ -180,22 +182,22 @@ class QuantifierView:
                          command=close)
         test.pack()
 
-    def createMostOfControls(self):
-        container_mostof = tk.Frame(self.queryWindow)
-        container_mostof.rowconfigure(0)
-        container_mostof.columnconfigure(0)
+    def create_most_of_controls(self):
+        container_most_of = tk.Frame(self.queryWindow)
+        container_most_of.rowconfigure(0)
+        container_most_of.columnconfigure(0)
 
-        label_y_axis = tk.Label(container_mostof, text="m:")
+        label_y_axis = tk.Label(container_most_of, text="m:")
         label_y_axis.grid(row=0, column=0)
-        self.entry_m = tk.Entry(container_mostof)
+        self.entry_m = tk.Entry(container_most_of)
         self.entry_m.grid(row=0, column=1)
 
-        label_y_axis = tk.Label(container_mostof, text="n:")
+        label_y_axis = tk.Label(container_most_of, text="n:")
         label_y_axis.grid(row=1, column=0)
-        self.entry_n = tk.Entry(container_mostof)
+        self.entry_n = tk.Entry(container_most_of)
         self.entry_n.grid(row=1, column=1)
 
-        container_mostof.pack(fill=tk.X)
+        container_most_of.pack(fill=tk.X)
 
     def open_query_window(self, keys: []):
         # Query Window
@@ -204,8 +206,8 @@ class QuantifierView:
         # self.queryWindow.geometry("400x200")
         self.queryWindow.resizable(width=False, height=False)
 
-        self.createAxisInputs()
-        self.createModeInputs()
-        self.createMostOfControls()
-        self.createKeyEntries(keys)
-        self.createControlInputs(keys)
+        self.create_axis_inputs()
+        self.create_mode_inputs()
+        self.create_most_of_controls()
+        self.create_key_entries(keys)
+        self.create_control_inputs(keys)

@@ -1,8 +1,8 @@
-import tkinter.filedialog as tkFile
+import tkinter.filedialog as tk_file
 import os.path as path
 
 
-def parseBoundaries(keys: [str], bounds: [str]) -> {}:
+def parse_boundaries(keys: [str], bounds: [str]) -> {}:
     result = {}
     for i, key in enumerate(keys):
         if key == "value":
@@ -15,7 +15,7 @@ def parseBoundaries(keys: [str], bounds: [str]) -> {}:
 def open_file() -> (str, [], {}, []):
 
     """Open a file for editing."""
-    filepath = tkFile.askopenfilename(
+    filepath = tk_file.askopenfilename(
         filetypes=[("CSV Files", "*.csv"), ("All Files", "*.*")]
     )
 
@@ -41,7 +41,7 @@ def open_file() -> (str, [], {}, []):
 
             entries = line.replace(" ", "").replace("\n", "").split(",")
             if lineNr == 1:
-                bounds = parseBoundaries(keys, entries)
+                bounds = parse_boundaries(keys, entries)
                 continue
 
             value_dict = {}
