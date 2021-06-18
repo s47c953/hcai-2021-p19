@@ -57,18 +57,18 @@ _Please note that currently only the Lukasiewicz t–norm and t–conorm make us
 
 ### Parameter
 #### lambda
-The value of lambda influences the boundaries of the yes and no sections using the Lukasiewicz t–norm and t–conorm. Adjustion this paramater can be used to make the classifier more or less strict depending on desired outcome.
+The value of lambda influences the boundaries of the yes and no sections using the Lukasiewicz t–norm and t–conorm and can be any value greater 0. Adjusting this paramater can be used to make the classifier more or less strict depending on desired outcome. The following images show the results of changing lambda
 
-<img src="images/lukasiewict_lr_1.png" width="33%" alt>
-<em>test</em>
-
-<img src="images/lukasiewict_l_2.png" width="33%" alt>
-<em>test2</em>
-
-<img src="images/lukasiewict_l_0_5.png" width="33%" alt>
-<em>test3</em>
+<img src="images/lukasiewicz_lr_1.png" width="33%" alt>
+<img src="images/lukasiewicz_l_2.png" width="33%" alt>
+<img src="images/lukasiewicz_l_0_5.png" width="33%" alt>
 
 #### r
+The value of r influences the resulting values of the maybe sections. Adjusting this paramater can be used to make the classifier more or less strict with nodes in the maybe sections. The following images show the result of changing r
+
+<img src="images/lukasiewicz_lr_1.png" width="33%" alt>
+<img src="images/lukasiewicz_r_n2.png" width="33%" alt>
+<img src="images/lukasiewicz_r_2.png" width="33%" alt>
 
 ### Plot
 
