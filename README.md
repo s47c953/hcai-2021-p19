@@ -3,13 +3,11 @@
 ## AK HCAI Mini Projects (Class of 2021) - Mini Project 19 
 A project for the course https://human-centered.ai/lv-706-046-ak-hci-2021-hcai/
 
+## Related Publications
+
 
 ## Introduction
-This project implements the theoretical approaches discussed in 
-
-> Extension of the work of Classification by ordinal sumsof conjunctive and disjunctive functions for explainableAI and interpretable machine learning solutions
-
-in a practical way
+This project implements the theoretical approaches described in "Related Publications" section and provides a set of example data sets.
 
 ## Quickstart Guide
 
@@ -59,6 +57,16 @@ _Please note that currently only the Lukasiewicz t–norm and t–conorm make us
 
 ### Parameter
 #### lambda
+The value of lambda influences the boundaries of the yes and no sections using the Lukasiewicz t–norm and t–conorm. Adjustion this paramater can be used to make the classifier more or less strict depending on desired outcome.
+
+<img src="images/lukasiewict_lr_1.png" width="33%" alt>
+<em>test</em>
+
+<img src="images/lukasiewict_l_2.png" width="33%" alt>
+<em>test2</em>
+
+<img src="images/lukasiewict_l_0_5.png" width="33%" alt>
+<em>test3</em>
 
 #### r
 
