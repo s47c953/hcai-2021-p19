@@ -4,7 +4,13 @@ from controller.Controller import Controller
 
 
 def main():
-    # create View
+    """ Start point of the application.
+    Model, View and Controller are instantiated here and the application started.
+
+    :return: void
+    """
+
+    # create MVC
     m = Model()
     v = View()
     Controller(m, v)

@@ -151,40 +151,78 @@ class View:
         self.canvasPlot.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
     def quantifier_view_wrapper(self, keys: list):
-        """Opens the quantifier/query window. 'keys' is the list of attribute names from the data."""
+        """ Opens the quantifier/query window. 'keys' is the list of attribute names from the data.
+
+        :param keys: The keys from the loaded csv file.
+        :return: void
+        """
         self.aqView.open_query_window(keys)
 
     def register_quantifier_button_event(self, event):
-        """Sets the event on the 'Query' button."""
+        """ Sets the event on the 'Query' button.
+
+        :param event: The event to set.
+        :return: void
+        """
         self.btnQueryWindow["command"] = event
 
     def register_load_file_event(self, event):
-        """Sets the event to the 'Load' button."""
+        """ Sets the event to the 'Load' button.
+
+        :param event: The event to set.
+        :return: void
+        """
         self.btnLoadFile["command"] = event
 
     def register_calc_l_r_event(self, event):
-        """Sets the event to the 'calc l r' button."""
+        """ Sets the event to the 'calc l r' button.
+
+        :param event: The event to set.
+        :return: void
+        """
         self.btnCalcLR["command"] = event
 
     def register_plot_event(self, event):
-        """Sets the event to the 'Plot' button."""
+        """ Sets the event to the 'Plot' button.
+
+        :param event: The event to set.
+        :return: void
+        """
         self.btnPlot["command"] = event
 
     def register_clear_event(self, event):
-        """Sets the event to the 'Clear' button."""
+        """ Sets the event to the 'Clear' button.
+
+        :param event: The event to set.
+        :return: void
+        """
         self.btnClear["command"] = event
 
     def register_set_value_event(self, event):
-        """Sets the event to the 'Set' button."""
+        """ Sets the event to the 'Set' button.
+
+        :param event: The event to set.
+        :return: void
+        """
         self.btnSetValue["command"] = event
 
     def set_label_file_text(self, text: str):
-        """Sets the text to the 'File Name' label."""
+        """ Sets the text to the 'File Name' label.
+
+        :param text: The filename.
+        :return: void
+        """
         self.txtFileName["text"] = text
 
     def set_lambda_r(self, lam: float, r: float, l_error: float, r_error: float):
-        """Empties the lambda and r entries and inserts the new values for lambda.
+        """ Empties the lambda and r entries and inserts the new values for lambda.
         Additionally the errors of lambda and r are set to the respective labels.
+
+        :param lam: The value for lambda.
+        :param r: The value for r.
+        :param l_error: The error of lambda.
+        :param r_error: The error of r.
+        :return: void
         """
         self.entR.delete(0, "end")
         self.entR.insert(0, "{:.4f}".format(r))
@@ -194,40 +232,75 @@ class View:
         self.lblErrorR["text"] = "{:.4f}".format(r_error)
 
     def set_sum_value(self, value: float):
-        """Sets the total sum of all the data points."""
+        """ Sets the total sum of all the data points.
+
+        :param value: The value for the sum information.
+        :return:  void
+        """
         self.txtSumValue.set("{:.4f}".format(value))
 
     def get_lambda_r(self) -> (float, float):
-        """Returns the current values in the entries for lambda and r."""
+        """ Returns the current values in the entries for lambda and r.
+
+        :return: The values for lambda and r.
+        """
         lam = float(self.entL.get())
         r = float(self.entR.get())
         return lam, r
 
     def get_quantifier_axes(self) -> (list, list):
+        """ Returns the x and y keys (attribute list) which were set in the quantifier/query window.
+
+        :return: The keys for x and y.
+        """
         x_keys = self.aqView.keys_x
         y_keys = self.aqView.keys_y
         return x_keys, y_keys
 
     def get_quantifier_m_n(self) -> (float, float):
+        """ Returns m and n of the quantifier/query window.
+
+        :return: The values for m and n.
+        """
         m = self.aqView.m
         n = self.aqView.n
         return m, n
 
     def get_quantifier_modes(self) -> (str, str):
+        """ Returns the quantifier mode set in the quantifier/query window.
+
+        :return: The set quantifier modes.
+        """
         x_mode = self.aqView.x_mode
         y_mode = self.aqView.y_mode
         return x_mode, y_mode
 
     def get_selected_aggregation_function(self) -> str:
+        """ Returns the aggregation function selected in the dropdown.
+
+        :return: The set aggregation function.
+        """
         return self.aggregationPopupValue.get()
 
     def get_selected_note_index(self) -> int:
+        """ Returns the index of the node which is currently selected in the chart.
+
+        :return: The index of the selected node.
+        """
         return self.selected_node_index
 
     def get_target_node_value(self) -> float:
+        """ Returns the target value for the node which was entered in the corresponding entry widget.
+
+        :return: The set target value.
+        """
         return float(self.entInputSol.get())
 
     def run(self):
+        """ Executes the loop for the UI.
+
+        :return: void
+        """
         self.root.mainloop()
 
     @staticmethod
@@ -235,7 +308,13 @@ class View:
         """ Creates the background of the chart out of an array of points generated by using the
         provided aggregation function. This results in a gradient like image from red (low value, 0)
         to green (high value, 1) depending on the value of the datapoint in each location.
+
+        :param aggregation_function: The  selected aggregation function.
+        :param lam: Value of lambda.
+        :param r: Value of r.
+        :return: The final image according to the aggregation function, lambda and r.
         """
+
         resolution = 500
 
         # gradient between 0 and 1 for 256*256
@@ -259,6 +338,16 @@ class View:
         return img
 
     def plot(self, plot_targets: [], data: [], raw_data: [], aggregation_function, lam, r):
+        """ TODO docu
+
+        :param plot_targets:
+        :param data:
+        :param raw_data:
+        :param aggregation_function:
+        :param lam: The value of lambda.
+        :param r: The value of r.
+        :return:
+        """
         self.targetSubPlot.clear()
 
         # prepare lists for each axis and the color
