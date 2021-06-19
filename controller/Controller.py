@@ -4,8 +4,18 @@ from view.View import View
 
 
 class Controller:
+    """Controller Class
+    The controller of the MVC application.
+    """
 
     def __init__(self, model: Model, view: View):
+        """ Constructor
+        Initialising of variables for the loaded data and registering of event handlers.
+
+        :param model: The Model.
+        :param view: The View.
+        """
+
         # MVC classes
         self.model = model
         self.view = view
@@ -27,6 +37,10 @@ class Controller:
         self.view.register_set_value_event(self.change_target_value)
 
     def load_file(self):
+        """ Loads the CSV file and sets all the gathered data.
+
+        :return: void
+        """
         label_string, data, bounds, keys = open_file()
         if not data:
             return
@@ -38,6 +52,10 @@ class Controller:
         self.bounds = bounds
 
     def clear_data(self):
+        """ Clears the loaded data.
+
+        :return: void
+        """
         self.raw_data = None
         self.normalized_data = None
         self.quantified_data = None
@@ -48,6 +66,11 @@ class Controller:
         self.plot_data()
 
     def plot_data(self):
+        """ Plots the set data.
+
+        :return: void
+        """
+
         # get data for applying quantifier functions
         x_keys, y_keys = self.view.get_quantifier_axes()
         x_mode, y_mode = self.view.get_quantifier_modes()
@@ -66,12 +89,20 @@ class Controller:
         self.view.plot(plot_targets, self.quantified_data, self.raw_data, aggregation_function, l, r)
 
     def change_target_value(self):
+        """ Changes the target value of a node.
+
+        :return: void
+        """
         selected_node = self.view.get_selected_note_index()
         target_value = self.view.get_target_node_value()
         self.target_values[selected_node] = target_value
         self.quantified_data[selected_node]["value"] = target_value
 
     def calculate_lambda_r(self):
+        """ Calculates lambda and r from the loaded data.
+
+        :return: void
+        """
         selected_aggregation_function = self.view.get_selected_aggregation_function()
         aggregation_function = self.model.get_aggregation_function_from_string(selected_aggregation_function)
         l_mean, r_mean, l, r = aggregation_function.get_lambda_r(self.quantified_data, -2.0, 4.0, 0.0001, 5.0, 0.0001)

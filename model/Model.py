@@ -3,12 +3,22 @@ from model.AggregationFunction import AggregationFunction
 
 
 class Model:
+    """Model Class
+    The model of the MVC application.
+    """
 
     def __init__(self):
+        """ Empty Constructor """
         pass
 
     @staticmethod
     def normalize_input_data(data: [{}], bounds: {}) -> [{}]:
+        """ Normalizes the data between 0 and 1.
+
+        :param data: The original data.
+        :param bounds: The bounds of the data. Per entry.
+        :return: The normalized data.
+        """
         result = []
         for row in data:
             row_result = {}
@@ -47,10 +57,21 @@ class Model:
 
     @staticmethod
     def apply_quantifier_function(data: [], x_keys: [], y_keys: [], x_mode, y_mode, m=None, n=None):
+        """ TODO 
+
+        :param data:
+        :param x_keys:
+        :param y_keys:
+        :param x_mode:
+        :param y_mode:
+        :param m:
+        :param n:
+        :return:
+        """
         if not data:
             return []
 
-        if x_mode == "mostof":
+        if x_mode ==  "most_of":
             x_function = most_of_aggregation
         elif x_mode == "conjunction":
             x_function = conjunction
@@ -59,7 +80,7 @@ class Model:
         else:
             raise Exception("Invalid data aggregation for x")
 
-        if y_mode == "mostof":
+        if y_mode == "most_of":
             y_function = most_of_aggregation
         elif y_mode == "conjunction":
             y_function = conjunction

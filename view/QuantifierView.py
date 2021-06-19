@@ -12,7 +12,6 @@ MODE_MOST_OF = "most_of"
 
 class QuantifierView:
     """ QuantifierView Class
-
     Class containing the view of the quantifier/query window.
     """
 
@@ -25,7 +24,6 @@ class QuantifierView:
 
     def __init__(self):
         """ Constructor
-
         Variables for UI inputs are declared in the constructor.
         """
         self.axisSelection = tk.StringVar()

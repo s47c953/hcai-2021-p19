@@ -3,6 +3,13 @@ import os.path as path
 
 
 def parse_boundaries(keys: [str], bounds: [str]) -> {}:
+    """ Extracts the boundaries from the CSV file.
+    Each key has a boundary attached to it.
+
+    :param keys: The keys of the loaded file.
+    :param bounds: The line containing the boundaries.
+    :return: The resulting boundaries.
+    """
     result = {}
     for i, key in enumerate(keys):
         if key == "value":
@@ -13,8 +20,11 @@ def parse_boundaries(keys: [str], bounds: [str]) -> {}:
 
 
 def open_file() -> (str, [], {}, []):
+    """ Open a CSV file to return the contained information.
 
-    """Open a file for editing."""
+    :return: The text for the file name label, the data, the bounds and the keys (attributes)
+    """
+
     filepath = tk_file.askopenfilename(
         filetypes=[("CSV Files", "*.csv"), ("All Files", "*.*")]
     )

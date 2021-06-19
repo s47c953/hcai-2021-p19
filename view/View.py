@@ -9,7 +9,6 @@ from view.QuantifierView import QuantifierView
 
 class View:
     """View Class
-
     This class is the View in our MVC application.
     It contains the main window generation as well as all the events and functions for UI manipulation.
     """
@@ -18,8 +17,7 @@ class View:
     BUTTON_WIDTH = 10
 
     def __init__(self):
-        """Constructor
-
+        """ Constructor
         The main window with all the containers and inputs is generated here.
         """
 
