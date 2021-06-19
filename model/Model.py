@@ -57,16 +57,17 @@ class Model:
 
     @staticmethod
     def apply_quantifier_function(data: [], x_keys: [], y_keys: [], x_mode, y_mode, m=None, n=None):
-        """ TODO 
+        """ Calculates the x and y values for each datapoint according to the parameters set in the
+        quantifier/query window.The values for m and n are only relevant for the most_of quantifier.
 
-        :param data:
-        :param x_keys:
-        :param y_keys:
-        :param x_mode:
-        :param y_mode:
-        :param m:
-        :param n:
-        :return:
+        :param data: The data.
+        :param x_keys: The set x keys from the quantifier/query window.
+        :param y_keys: The set y keys from the quantifier/query window.
+        :param x_mode: The set quantifier for the x axis.
+        :param y_mode: The set quantifier for the x axis.
+        :param m: The value for m. Only needed for the most_of quantifier.
+        :param n: The value for n. Only needed for the most_of quantifier.
+        :return: The quantified data calculated by using the needed quantifier functions.
         """
         if not data:
             return []
@@ -108,16 +109,38 @@ class Model:
 
     @staticmethod
     def restore_target_values(data, target_values) -> list:
+        """ Restores the target values of all data entries.
+        This is to reset the target value which might have been modified by the user.
+        Only applies if target values are given within the dataset.
+
+        :param data: The quantified data.
+        :param target_values: The target values extracted from the dataset.
+        :return: The quantified data with the original target values.
+        """
         for key, value in target_values.items():
             data[key]["value"] = value
         return data
 
     @staticmethod
     def get_aggregation_function_from_string(target: str):
+        """ Returns the corresponding aggregation function by a string identifier.
+
+        :param target: The string identifier for the aggregation function.
+        :return: The aggregation function.
+        """
         return AggregationFunction.get_class_from_string(target)
 
     @staticmethod
     def prepare_plot_targets(data: list, aggregation_function, lam: float, r: float) -> (list, float):
+        """ Prepares the plot data for plotting. Here the values for x, y and the value of the point
+        are set and the color is assigned according to the value of the datapoint.
+
+        :param data: The quantified data.
+        :param aggregation_function: The aggregation function to use.
+        :param lam: the value for lambda.
+        :param r: The value for r.
+        :return: The plottable data and the sum of all the datapoint values.
+        """
         plot_targets = []
         value_sum = 0.0
         for val in data:

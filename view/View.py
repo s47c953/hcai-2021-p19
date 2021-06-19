@@ -366,6 +366,7 @@ class View:
 
         img = self.create_background(aggregation_function, lam, r)
         self.targetSubPlot.imshow(img, extent=[0, 1, 0, 1])
+        
         # plot scatter plot
         sc = self.targetSubPlot.scatter(x_targets, y_targets, color=color_targets, edgecolors=border_targets)
 

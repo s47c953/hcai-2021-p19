@@ -7,11 +7,12 @@ import statistics
 class AggregationFunction:
 
     @staticmethod
-    def perform(x: float, y: float, lam: float, r: float) -> float:
-        raise NotImplementedError
-
-    @staticmethod
     def get_class_from_string(s: str):
+        """ Returns the aggregation function according to the given string identifier.
+
+        :param s: The string identifier.
+        :return: The aggregation function.
+        """
         if s == "Lukasiewicz":
             return LukasiewiczAggregationFunction
         elif s == "MinMax":
@@ -22,11 +23,17 @@ class AggregationFunction:
             return TnormTconormArithmeticAggregationFunction
 
     @staticmethod
-    def get_marker(lam: float):
-        raise NotImplementedError
-
-    @staticmethod
     def get_lambda_r(data: [], r_min: float, r_max: float, l_min: float, l_max: float, resolution: float):
+        """ TODO docu
+
+        :param data:
+        :param r_min:
+        :param r_max:
+        :param l_min:
+        :param l_max:
+        :param resolution:
+        :return:
+        """
         maybe_points = []
         yes_points = []
         no_points = []
@@ -84,10 +91,35 @@ class AggregationFunction:
 
         return l_mean_error, r_mean_error, l_result, r_result
 
+    @staticmethod
+    def perform(x: float, y: float, lam: float, r: float) -> float:
+        """ Default implementation
+        In this function the aggregation functions for the yes, no, maybe parts is applied.
+        The resulting value for the given point is the returned.
+
+        :param x: The value for x.
+        :param y: The value for y.
+        :param lam: The value for lambda.
+        :param r: The value for r.
+        :return: The value for the corresponding point.
+        """
+        raise NotImplementedError
+
+    @staticmethod
+    def get_marker(lam: float):
+        """ Default Implementation
+        TODO docu
+
+        :param lam: The value for lambda.
+        :return:
+        """
+        raise NotImplementedError
+
 
 class LukasiewiczAggregationFunction(AggregationFunction):
     @staticmethod
     def perform(x: float, y: float, lam: float, r: float) -> float:
+        """ See default implementation in class AggregationFunction. """
         if x <= 0.5 and y <= 0.5:
             return LukasiewiczAggregationFunction._no_function(x, y, lam, r)
         elif x <= 0.5 or y <= 0.5:
@@ -122,6 +154,7 @@ class LukasiewiczAggregationFunction(AggregationFunction):
 
     @staticmethod
     def get_marker(lam: float):
+        """ See default implementation in class AggregationFunction. """
         x_no = [val/100 for val in range(0, 51)]
         x_yes = [val/100 for val in range(50, 101)]
 
@@ -134,6 +167,7 @@ class LukasiewiczAggregationFunction(AggregationFunction):
 class MinMaxAggregationFunction(AggregationFunction):
     @staticmethod
     def perform(x: float, y: float, lam: float = 1, r: float = 1) -> float:
+        """ See default implementation in class AggregationFunction. """
         if x < 0.5 and y < 0.5:
             return MinMaxAggregationFunction._no_function(x, y, lam, r)
         elif x < 0.5 or y < 0.5:
@@ -156,6 +190,7 @@ class MinMaxAggregationFunction(AggregationFunction):
 
     @staticmethod
     def get_marker(lam: float):
+        """ See default implementation in class AggregationFunction. """
         x_no = [0.0, 0.0, 0.5]
         y_no = [0.5, 0.0, 0.0]
         x_yes = [0.5, 1.0, 1.0]
@@ -167,6 +202,7 @@ class MinMaxAggregationFunction(AggregationFunction):
 class TnormTconormAggregationFunction(AggregationFunction):
     @staticmethod
     def perform(x: float, y: float, lam: float = 1, r: float = 1) -> float:
+        """ See default implementation in class AggregationFunction. """
         if x < 0.5 and y < 0.5:
             return TnormTconormAggregationFunction._no_function(x, y, lam, r)
         elif x < 0.5 or y < 0.5:
@@ -190,6 +226,7 @@ class TnormTconormAggregationFunction(AggregationFunction):
 
     @staticmethod
     def get_marker(lam: float):
+        """ See default implementation in class AggregationFunction. """
         x_no = [0.0, 0.0, 1.0]
         y_no = [1.0, 0.0, 0.0]
         x_yes = [0.5, 1.0, 1.0]
@@ -201,6 +238,7 @@ class TnormTconormAggregationFunction(AggregationFunction):
 class TnormTconormArithmeticAggregationFunction(AggregationFunction):
     @staticmethod
     def perform(x: float, y: float, lam: float = 1, r: float = 1) -> float:
+        """ See default implementation in class AggregationFunction. """
         if x < 0.5 and y < 0.5:
             return TnormTconormArithmeticAggregationFunction._no_function(x, y, lam, r)
         elif x < 0.5 or y < 0.5:
@@ -224,6 +262,7 @@ class TnormTconormArithmeticAggregationFunction(AggregationFunction):
 
     @staticmethod
     def get_marker(lam: float):
+        """ See default implementation in class AggregationFunction. """
         x_no = [0.0, 0.0, 0.5]
         y_no = [0.5, 0.0, 0.0]
         x_yes = [0.5, 1.0, 1.0]
