@@ -4,7 +4,9 @@
 A project for the course [AK HCAI Mini Projects (Class of 2021)](https://human-centered.ai/lv-706-046-ak-hci-2021-hcai/).
 
 ## Related Publications
+[Classification by ordinal sums of conjunctive and disjunctive functions for explainable AI and interpretable machine learning solutions](https://www.sciencedirect.com/science/article/pii/S0950705121001799?via%3Dihub)
 
+[The axiomatization of asymmetric disjunction and conjunction](https://www.sciencedirect.com/science/article/abs/pii/S1566253518308510)
 
 ## Introduction
 This project implements the theoretical approaches described in [Related Publications](#related-publications) section and provides a set of example data sets.
@@ -98,7 +100,7 @@ Using the plot function without providing any data will result in an empty plot.
 
 <img src="images/empty_plot.png" width="50%">
 
-### Flats Dataset
+### Flats Data Set
 This dataset consists of fictional appartments and contains the following attributes:
 * Distance to schools
 * Distance to grocery shops
@@ -116,7 +118,7 @@ The following example plot can be reproduced using following parameters:
 
 <img src="images/flat_plot.png" width="50%">
 
-### Revenue Dataset
+### Revenue Data Set
 This dataset consists of fictional sales values and contains the following attributes:
 * The sales of a given period
 * The average time used per sale
@@ -125,4 +127,30 @@ Plotting this data using the Lukasiewicz t–norm and t–conorm results in the 
 
 <img src="images/sales.png" width="50%">
 
-### Medical Dataset
+### Heart Disease Data Set
+
+This example was prepared using the [Cleveland Heart Disease Data Set](https://archive.ics.uci.edu/ml/datasets/Heart+Disease).
+In order to properly transform the data to the space of aggregation functions we have made following assumptions:
+* age: assuming critical phase starts with 40 and all above 70 is critical
+* sex: remains either 0 (female) or 1 (male) and is not used for Plotting
+* cp (chest pain type): asymptomatic types (4) are not as critical as typical angina types
+* trestbps (resting blood pressure): values above the ideal range (90-120) are rated worse and values above 140 are clear negative
+* chol (serum cholestoral in mg/dl): values above the ideal range (200) are rated worse and values above 220 are clear negative
+* fbs (fasting blood sugar > 120 mg/dl): 1 is clear negative whereas 0 is clear positively
+* restecg (resting electrocardiographic results):
+    * Value 0: normal
+	* Value 1: having ST-T wave abnormality (T wave inversions and/or ST elevation or depression of > 0.05 mV)
+	* Value 2: showing probable or definite left ventricular hypertrophy by Estes' criteria 
+* thalach (maximum heart rate achieved): assuming higher values are better and all above 160 is clear positive whereas below 120 is clear negative
+* exang (exercise induced angina): 1 is positive and 0 is negative
+* oldpeak (ST depression induced by exercise relative): value not used
+* slope (slope of the peak exercise ST segment): value not used
+* ca (number of major vessels): value not used
+* thal: value not used
+* num (diagnosis of heart disease): assuming the higher the worst. 0 is positive and 3 clear negative
+
+To reproduce following image:
+* apply age for the y axis
+* use most-of quantifier with m=0.4 and n=0.8 and attributes cp, trestbps, chol, fbs, restecg, thalach, exang
+
+<img src="images/cleveland_heart.png" width="50%">
