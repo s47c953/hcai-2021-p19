@@ -50,7 +50,7 @@ class Model:
         if not data:
             return []
 
-        if x_mode == "mostof":
+        if x_mode == "most_of":
             x_function = most_of_aggregation
         elif x_mode == "conjunction":
             x_function = conjunction
@@ -59,7 +59,7 @@ class Model:
         else:
             raise Exception("Invalid data aggregation for x")
 
-        if y_mode == "mostof":
+        if y_mode == "most_of":
             y_function = most_of_aggregation
         elif y_mode == "conjunction":
             y_function = conjunction
