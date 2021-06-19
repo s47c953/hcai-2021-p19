@@ -71,7 +71,7 @@ class Model:
         if not data:
             return []
 
-        if x_mode ==  "most_of":
+        if x_mode == "most_of":
             x_function = most_of_aggregation
         elif x_mode == "conjunction":
             x_function = conjunction
