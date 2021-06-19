@@ -71,6 +71,10 @@ The value of r influences the resulting values of the maybe sections. Adjusting 
 <img src="images/lukasiewicz_r_2.png" width="33%" alt>
 
 ### Plot
+The plot is segmented into 4 sections. In the lower left there is the left section and is further split into 2 parts. Values below the curve will strictly be marked as no (0) whereas values above the curve will have a value greater 0.
+In the upper right is the yes section. This is again split into 2 parts where above the curve the values will be strict yes (1) and values below the curve are smaller 1.
+The maybe fields in the upper left and lower right show data points which are calculated by the maybe functions.
+The exact result of the plot depends on the used aggregation and quantifier function.
 
 ### Modifying Nodes
 
@@ -80,5 +84,7 @@ The value of r influences the resulting values of the maybe sections. Adjusting 
 
 ### Appartment Dataset
 <img src="images/flat_plot.png" width="50%">
+
+### Revenue Dataset
 
 ### Medical Dataset
