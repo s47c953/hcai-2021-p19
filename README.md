@@ -117,5 +117,12 @@ The following example plot can be reproduced using following parameters:
 <img src="images/flat_plot.png" width="50%">
 
 ### Revenue Dataset
+This dataset consists of fictional sales values and contains following attributes:
+* the sales of a given period
+* the average time used per sale
+
+Plotting this data using the Lukasiewicz t–norm and t–conorm results in following plot
+
+<img src="images/sales.png" width="50%">
 
 ### Medical Dataset
