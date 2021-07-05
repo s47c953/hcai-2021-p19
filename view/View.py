@@ -359,8 +359,16 @@ class View:
             color_targets.append(target["color"])
             if i == self.selected_node_index:
                 border_targets.append("blue")
-            elif target["is_training_point"]:
+            elif raw_data[i]["num"] < 1:
+                border_targets.append("white")
+            elif raw_data[i]["num"] < 2:
+                border_targets.append("red")
+            elif raw_data[i]["num"] < 3:
+                border_targets.append("green")
+            elif raw_data[i]["num"] < 4:
                 border_targets.append("blue")
+            elif target["is_training_point"]:
+                border_targets.append("yellow")
             else:
                 border_targets.append("black")
 

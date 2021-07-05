@@ -1,7 +1,8 @@
+import time
+
 from model.Model import Model
 from model.Filehandler import open_file
 from view.View import View
-
 
 class Controller:
     """Controller Class
@@ -76,6 +77,18 @@ class Controller:
         x_mode, y_mode = self.view.get_quantifier_modes()
         m, n = self.view.get_quantifier_m_n()
 
+        l, r = self.view.get_lambda_r()
+        selected_aggregation_function = self.view.get_selected_aggregation_function()
+        aggregation_function = self.model.get_aggregation_function_from_string(selected_aggregation_function)
+        start = time.time()
+        self.quantified_data = self.model.apply_quantifier_function(self.normalized_data, x_keys, y_keys, x_mode, y_mode, m,
+                                                                    n)
+        end = time.time()
+
+        cps = 1 / (end - start)
+        print(f"calcs per sec: {cps}")
+
+
         self.quantified_data = self.model.apply_quantifier_function(self.normalized_data, x_keys, y_keys, x_mode, y_mode, m, n)
         self.quantified_data = self.model.restore_target_values(self.quantified_data, self.target_values)
 
@@ -105,5 +118,5 @@ class Controller:
         """
         selected_aggregation_function = self.view.get_selected_aggregation_function()
         aggregation_function = self.model.get_aggregation_function_from_string(selected_aggregation_function)
-        l_mean, r_mean, l, r = aggregation_function.get_lambda_r(self.quantified_data, -2.0, 4.0, 0.0001, 5.0, 0.0001)
+        l_mean, r_mean, l, r = aggregation_function.get_lambda_r(self.quantified_data, 0.0001, 4.0, 0.0001, 5.0, 0.0001)
         self.view.set_lambda_r(l, r, l_mean, r_mean)
