@@ -154,12 +154,16 @@ In order to properly transform the data to the space of aggregation functions we
     * 0: no diagnosis of heart disease
     * 1,2,3,4: diagnosis of heart disease
 
-Due to lack of domain knowledge the parameters for most-of quantifier are found in an automated way. This is done by calling the main skript with the heart_cleveland dataset as additional parameter ("python main.py heart_cleveland.csv"). This way the skript iterates over all posible sets for x and y axis in combination with parameters m and n for most-of quantifier. Combinations which achieve a certain accuracy will then stored in an file and can be used in the interactive UI. Accuracy is definde by following formula: 
-(true_positive + true_negative) / sum_nodes
+Due to lack of domain knowledge the parameters for most-of quantifier are found in an automated way. This is done by calling the main skript with the heart_cleveland dataset as additional parameter ("python main.py heart_cleveland.csv"). This way the skript iterates over all posible sets for x and y axis in combination with parameters m and n for most-of quantifier. Combinations which achieve a certain accuracy will then stored in an file and can be used in the interactive UI. 
+
+Accuracy is definde by following formula: 
+ (true_positive + true_negative) / sum_nodes
+
 The classification into true_positive and true_negative is as follows:
 * A border is drawn to split the field into 2 triangles
 * The lower left value is expected to group patients without heart disease diagnosis and are count as true_negative
 * The upper right value is expected to group patients with heart dieses diagnosis and are count as true_positve
+
 White nodes represent patients without dignosed disease. Other colours represent positive diagnosed patients.
 <img src="images/cleveland_heart_classify.png" width="50%">
 
