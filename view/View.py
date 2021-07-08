@@ -55,7 +55,7 @@ class View:
         self.aggregationPopupValue = tk.StringVar(self.containerInput)
         # Dictionary with options
         choices = {'Lukasiewicz', 'LukasiewiczV1', 'MinMax', 'TnormTconormGeometric', 'TnormTconormArithmetic'}
-        self.aggregationPopupValue.set('Lukasiewicz')  # set the default option
+        self.aggregationPopupValue.set('LukasiewiczV1')  # set the default option
         self.aggregationPopup = tk.OptionMenu(self.containerInput, self.aggregationPopupValue, *choices)
         self.txtAggregationLabel = tk.Label(master=self.containerInput, text="Aggregation Function")
         self.txtAggregationLabel.pack()
