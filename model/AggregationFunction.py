@@ -15,6 +15,8 @@ class AggregationFunction:
         """
         if s == "Lukasiewicz":
             return LukasiewiczAggregationFunction
+        if s == "LukasiewiczV1":
+            return LukasiewiczAggregationFunctionV1
         elif s == "MinMax":
             return MinMaxAggregationFunction
         elif s == "TnormTconormGeometric":
@@ -149,6 +151,54 @@ class LukasiewiczAggregationFunction(AggregationFunction):
 
         else:
             value = ((0.5*(x**r)) + (0.5*(y**r)))**(1/r)
+
+        return statistics.median([0, 1, value])
+
+    @staticmethod
+    def get_marker(lam: float):
+        """ See default implementation in class AggregationFunction. """
+        x_no = [val/100 for val in range(0, 51)]
+        x_yes = [val/100 for val in range(50, 101)]
+
+        y_yes = [((-x ** lam) + (0.5 ** lam) + 1) ** (1 / lam) for x in x_yes]
+        y_no = [((0.5 ** lam) - (x ** lam)) ** (1 / lam) for x in x_no]
+
+        return x_yes, y_yes, x_no, y_no
+
+
+class LukasiewiczAggregationFunctionV1(AggregationFunction):
+    @staticmethod
+    def perform(x: float, y: float, lam: float, r: float) -> float:
+        """ See default implementation in class AggregationFunction. """
+        if x <= 0.5 and y <= 0.5:
+            return LukasiewiczAggregationFunctionV1._no_function(x, y, lam, r)
+        elif x <= 0.5 or y <= 0.5:
+            return LukasiewiczAggregationFunctionV1._maybe_function(x, y, lam, r)
+        elif x >= 0.5 and y >= 0.5:
+            return LukasiewiczAggregationFunctionV1._yes_function(x, y, lam, r)
+
+    @staticmethod
+    def _yes_function(x: float, y: float, lam: float, r: float = 1) -> float:
+        return min(1.0, ((x ** lam) + (y ** lam) - (0.5 ** lam))) ** (1 / lam)
+
+    @staticmethod
+    def _no_function(x: float, y: float, lam: float, r: float = 1) -> float:
+        return max(0.0, ((x ** lam) + (y ** lam) - (0.5 ** lam))) ** (1 / lam)
+
+    @staticmethod
+    def _maybe_function(x: float, y: float, lam: float, r: float = 1) -> float:
+        if r == 0:
+            # r = 0 means we use the geometric mean
+            return (x*y) ** (1/2)
+        elif r < 0:
+            # r < 0 means we handle cases where x or y are 0
+            if x == 0 or y == 0:
+                return 0
+            else:
+                value = ((x**r) + (y**r) - (0.5**r))**(1/r)
+
+        else:
+            value = ((x**r) + (y**r) - (0.5**r))**(1/r)
 
         return statistics.median([0, 1, value])
 

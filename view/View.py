@@ -54,7 +54,7 @@ class View:
         # Aggregation Dropdown
         self.aggregationPopupValue = tk.StringVar(self.containerInput)
         # Dictionary with options
-        choices = {'Lukasiewicz', 'MinMax', 'TnormTconormGeometric', 'TnormTconormArithmetic'}
+        choices = {'Lukasiewicz', 'LukasiewiczV1', 'MinMax', 'TnormTconormGeometric', 'TnormTconormArithmetic'}
         self.aggregationPopupValue.set('Lukasiewicz')  # set the default option
         self.aggregationPopup = tk.OptionMenu(self.containerInput, self.aggregationPopupValue, *choices)
         self.txtAggregationLabel = tk.Label(master=self.containerInput, text="Aggregation Function")
@@ -359,16 +359,16 @@ class View:
             color_targets.append(target["color"])
             if i == self.selected_node_index:
                 border_targets.append("blue")
-            elif raw_data[i]["num"] < 1:
+            elif "num" in raw_data[i] and raw_data[i]["num"] < 1:
                 border_targets.append("white")
-            elif raw_data[i]["num"] < 2:
-                border_targets.append("red")
-            elif raw_data[i]["num"] < 3:
+            elif "num" in raw_data[i] and raw_data[i]["num"] < 2:
+                border_targets.append("purple")
+            elif "num" in raw_data[i] and raw_data[i]["num"] < 3:
                 border_targets.append("green")
-            elif raw_data[i]["num"] < 4:
+            elif "num" in raw_data[i] and raw_data[i]["num"] < 4:
                 border_targets.append("blue")
-            elif target["is_training_point"]:
-                border_targets.append("yellow")
+            # elif target["is_training_point"]:
+            #     border_targets.append("violet")
             else:
                 border_targets.append("black")
 

@@ -108,7 +108,7 @@ class Model:
         return results
 
     @staticmethod
-    def restore_target_values(data, target_values) -> list:
+    def restore_target_values(data, target_values, medical_dataset=None) -> list:
         """ Restores the target values of all data entries.
         This is to reset the target value which might have been modified by the user.
         Only applies if target values are given within the dataset.
@@ -117,8 +117,17 @@ class Model:
         :param target_values: The target values extracted from the dataset.
         :return: The quantified data with the original target values.
         """
-        for key, value in target_values.items():
-            data[key]["value"] = value
+        if medical_dataset:
+            for key, value in enumerate(medical_dataset):
+                # data[key]["value"] = value
+                if medical_dataset[key]["num"] > 0:
+                    data[key]["value"] = 1
+                else:
+                    data[key]["value"] = 0
+        else:
+            for key, value in target_values.items():
+                data[key]["value"] = value
+
         return data
 
     @staticmethod
