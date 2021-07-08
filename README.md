@@ -131,11 +131,11 @@ Plotting this data using the Lukasiewicz t–norm and t–conorm results in the 
 
 This example was prepared using the [Cleveland Heart Disease Data Set](https://archive.ics.uci.edu/ml/datasets/Heart+Disease).
 In order to properly transform the data to the space of aggregation functions we have made following assumptions:
-* age: assuming critical phase starts with 40 and all above 70 is critical
-* sex: remains either 0 (female) or 1 (male) and is not used for Plotting
+* age: assuming critical phase starts with 40 and all above 65 is critical
+* sex: remains either 0 (female) or 1 (male)
 * cp (chest pain type): asymptomatic types (4) are not as critical as typical angina types
 * trestbps (resting blood pressure): values above the ideal range (90-120) are rated worse and values above 140 are clear negative
-* chol (serum cholestoral in mg/dl): values above the ideal range (200) are rated worse and values above 220 are clear negative
+* chol (serum cholestoral in mg/dl): values close to the border of the ideal range (200) are rated worse and values above 300 are clear negative
 * fbs (fasting blood sugar > 120 mg/dl): 1 is clear negative whereas 0 is clear positively
 * restecg (resting electrocardiographic results):
     * Value 0: normal
@@ -143,14 +143,25 @@ In order to properly transform the data to the space of aggregation functions we
 	* Value 2: showing probable or definite left ventricular hypertrophy by Estes' criteria 
 * thalach (maximum heart rate achieved): assuming higher values are better and all above 160 is clear positive whereas below 120 is clear negative
 * exang (exercise induced angina): 1 is positive and 0 is negative
-* oldpeak (ST depression induced by exercise relative): value not used
-* slope (slope of the peak exercise ST segment): value not used
-* ca (number of major vessels): value not used
-* thal: value not used
-* num (diagnosis of heart disease): assuming the higher the worst. 0 is positive and 3 clear negative
+* oldpeak (ST depression induced by exercise relative): ST depression induced by exercixe relative to rest. Higher values are rated worse.
+* slope (slope of the peak exercise ST segment):
+* ca (number of major vessels): number of major vesels. Higher is worse.
+* thal: Thalasemia:
+    * Value 3: normal
+	* Value 6: fixed defect
+	* Value 7: reversable defect
+* num (diagnosis of heart disease), used for evaluation:
+    * 0: no diagnosis of heart disease
+    * 1,2,3,4: diagnosis of heart disease
+
+Due to lack of domain knowledge the parameters for most-of quantifier are found in an automated way. This is done by calling the main skript with the heart_cleveland dataset as additional parameter ("python main.py heart_cleveland.csv"). This way the skript iterates over all posible sets for x and y axis in combination with parameters m and n for most-of quantifier. Combinations which achieve a certain accuracy will then stored in an file and can be used in the interactive UI. Accuracy is definde by following formula: 
+(true_positive + true_negative) / sum_nodes
+The classification into true_positive and true_negative is as follows:
+<img src="images/cleveland_heart_classify.png" width="50%">
 
 To reproduce following image:
-* apply age for the y axis
-* use most-of quantifier with m=0.4 and n=0.8 and attributes cp, trestbps, chol, fbs, restecg, thalach, exang
+* x-axis: ['age', 'cp', 'trestbps', 'fbs', 'restecg', 'exang', 'oldpeak', 'slope', 'ca']
+* y-axis: ['sex', 'chol', 'thalach', 'thal']
+* use most-of quantifier with m=0.2 and n=0.7
 
 <img src="images/cleveland_heart.png" width="50%">
