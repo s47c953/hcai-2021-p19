@@ -119,6 +119,12 @@ class QuantifierView:
 
         row = 1
         column = 0
+
+        # skip if no keys available
+        if keys is None:
+            container_keys.pack(fill=tk.X)
+            return
+
         for key in keys:
 
             if column == 4:

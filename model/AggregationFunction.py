@@ -40,6 +40,10 @@ class AggregationFunction:
         yes_points = []
         no_points = []
 
+        # skip if no data is quantified
+        if data is None:
+            return 0.0, 0.0, 1.0, 1.0
+
         for point in data:
             if 'value' in point:
                 if point['x'] <= 0.5 and point['y'] <= 0.5:

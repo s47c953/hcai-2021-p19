@@ -348,6 +348,41 @@ class View:
         """
         self.targetSubPlot.clear()
 
+        no_0 = 0
+        no_1 = 0
+        yes_0 = 0
+        yes_1 = 0
+        maybe_0 = 0
+        maybe_1 = 1
+
+        # count classification of fields
+        # only in cleveland heart dataset or other datasets with "num" attribute
+        if raw_data is not None and 'num' in raw_data[0]:
+            for i, target in enumerate(plot_targets):
+                if target['val'] == 0:
+                    if raw_data[i]['num'] < 1:
+                        no_0 += 1
+                    else:
+                        no_1 += 1
+                elif target['val'] == 1:
+                    if raw_data[i]['num'] < 1:
+                        yes_0 += 1
+                    else:
+                        yes_1 += 1
+                else:
+                    if raw_data[i]['num'] < 1:
+                        maybe_0 += 1
+                    else:
+                        maybe_1 += 1
+
+
+            print(f"no_0: {no_0}\n"
+                  f"no_1: {no_1}\n"
+                  f"yes_0: {yes_0}\n"
+                  f"yes_1: {yes_1}\n"
+                  f"maybe_0: {maybe_0}\n"
+                  f"maybe_1: {maybe_1}\n")
+
         # prepare lists for each axis and the color
         x_targets = []
         y_targets = []

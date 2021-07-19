@@ -91,7 +91,7 @@ class Controller:
 
         self.quantified_data = self.model.apply_quantifier_function(self.normalized_data, x_keys, y_keys, x_mode, y_mode, m, n)
         self.quantified_data = self.model.restore_target_values(self.quantified_data, self.target_values)
-        if "num" in self.raw_data[0]:
+        if self.raw_data is not None and "num" in self.raw_data[0]:
             # case only happens in heart_cleveland dataset. automatically labels target values in respect to diagnosis
             self.quantified_data = self.model.restore_target_values(self.quantified_data, None, self.raw_data)
         else:
