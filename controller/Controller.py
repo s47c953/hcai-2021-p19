@@ -99,13 +99,13 @@ class Controller:
 
 
         # get aggregation parameter
-        l, r = self.view.get_lambda_r()
+        l_yes, l_no, r = self.view.get_lambda_r()
         selected_aggregation_function = self.view.get_selected_aggregation_function()
         aggregation_function = self.model.get_aggregation_function_from_string(selected_aggregation_function)
 
-        plot_targets, value_sum = self.model.prepare_plot_targets(self.quantified_data, aggregation_function, l, r)
+        plot_targets, value_sum = self.model.prepare_plot_targets(self.quantified_data, aggregation_function, l_yes, l_no, r)
         self.view.set_sum_value(value_sum)
-        self.view.plot(plot_targets, self.quantified_data, self.raw_data, aggregation_function, l, r)
+        self.view.plot(plot_targets, self.quantified_data, self.raw_data, aggregation_function, l_yes, l_no, r)
 
     def change_target_value(self):
         """ Changes the target value of a node.
@@ -124,5 +124,5 @@ class Controller:
         """
         selected_aggregation_function = self.view.get_selected_aggregation_function()
         aggregation_function = self.model.get_aggregation_function_from_string(selected_aggregation_function)
-        l_mean, r_mean, l, r = aggregation_function.get_lambda_r(self.quantified_data, 0.0001, 4.0, 0.0001, 5.0, 0.0001)
-        self.view.set_lambda_r(l, r, l_mean, r_mean)
+        l_mean_yes, l_mean_no, r_mean, l_yes, l_no, r = aggregation_function.get_lambda_r(self.quantified_data, 0.0001, 4.0, 0.0001, 5.0, 0.0001)
+        self.view.set_lambda_r(l_yes, l_no, r, l_mean_yes, l_mean_no, r_mean)

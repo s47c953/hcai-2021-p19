@@ -140,7 +140,7 @@ class Model:
         return AggregationFunction.get_class_from_string(target)
 
     @staticmethod
-    def prepare_plot_targets(data: list, aggregation_function, lam: float, r: float) -> (list, float):
+    def prepare_plot_targets(data: list, aggregation_function, lam_yes: float, lam_no: float, r: float) -> (list, float):
         """ Prepares the plot data for plotting. Here the values for x, y and the value of the point
         are set and the color is assigned according to the value of the datapoint.
 
@@ -158,7 +158,7 @@ class Model:
             is_training_point = "value" in val
 
             # get value from aggregation function
-            point_value = aggregation_function.perform(target_x, target_y, lam, r)
+            point_value = aggregation_function.perform(target_x, target_y, lam_yes, lam_no, r)
 
             # add to sum
             value_sum += point_value

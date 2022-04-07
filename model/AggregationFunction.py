@@ -41,8 +41,8 @@ class AggregationFunction:
         no_points = []
 
         # skip if no data is quantified
-        if data is None:
-            return 0.0, 0.0, 1.0, 1.0
+        if data is None or len(data) == 0:
+            return 0.0, 0.0, 0.0, 1.0, 1.0, 1.0
 
         for point in data:
             if 'value' in point:
@@ -60,7 +60,7 @@ class AggregationFunction:
         while r <= r_max:
             error = 0.0
             for point in maybe_points:
-                value = LukasiewiczAggregationFunction._maybe_function(point['x'], point['y'], 1, r)
+                value = LukasiewiczAggregationFunctionV1._maybe_function(point['x'], point['y'], 1, r)
                 target_value = point['value']
                 error += abs(value - target_value)
             if error < r_error:
@@ -72,33 +72,53 @@ class AggregationFunction:
         else:
             r_result = 1.0
 
+        lambda_yes = None
+        lambda_no = None
+        error_yes = None
+        error_no = None
+
+        # calculate lambda for yes function
         lam = l_min
-        l_result = lam
         l_error = sys.float_info.max
-        l_mean_error = 0
         while lam <= l_max:
             error = 0.0
             for point in yes_points:
-                value = LukasiewiczAggregationFunction._yes_function(point['x'], point['y'], lam, 1)
-                target_value = point['value']
-                error += abs(value - target_value)
-            for point in no_points:
-                value = LukasiewiczAggregationFunction._no_function(point['x'], point['y'], lam, 1)
+                value = LukasiewiczAggregationFunctionV1._yes_function(point['x'], point['y'], lam, 1)
                 target_value = point['value']
                 error += abs(value - target_value)
             if error < l_error:
-                l_result = lam
+                lambda_yes = lam
                 l_error = error
             lam += resolution
-        if len(yes_points) + len(no_points) != 0:
-            l_mean_error = l_error / (len(yes_points) + len(no_points))
+        if len(yes_points) != 0:
+            error_yes = l_error / len(yes_points)
         else:
-            l_result = 1.0
+            error_yes = 1.0
 
-        return l_mean_error, r_mean_error, l_result, r_result
+        # calculate lambda for no function
+        lam = l_min
+        l_error = sys.float_info.max
+        while lam <= l_max:
+            error = 0.0
+            for point in no_points:
+                value = LukasiewiczAggregationFunctionV1._no_function(point['x'], point['y'], lam, 1)
+                target_value = point['value']
+                error += abs(value - target_value)
+            if error < l_error:
+                lambda_no = lam
+                l_error = error
+            lam += resolution
+        if len(no_points) != 0:
+            error_no = l_error / len(no_points)
+        else:
+            error_no = 1.0
+
+        # return l_mean_error, r_mean_error, l_result, r_result
+        return error_yes, error_no, r_mean_error, lambda_yes, lambda_no, r_result
+
 
     @staticmethod
-    def perform(x: float, y: float, lam: float, r: float) -> float:
+    def perform(x: float, y: float, lam_yes: float, lam_no: float, r: float) -> float:
         """ Default implementation
         In this function the aggregation functions for the yes, no, maybe parts is applied.
         The resulting value for the given point is the returned.
@@ -112,7 +132,7 @@ class AggregationFunction:
         raise NotImplementedError
 
     @staticmethod
-    def get_marker(lam: float):
+    def get_marker(lam_yes: float, lam_no: float):
         """ Default Implementation
         TODO docu
 
@@ -172,14 +192,14 @@ class LukasiewiczAggregationFunction(AggregationFunction):
 
 class LukasiewiczAggregationFunctionV1(AggregationFunction):
     @staticmethod
-    def perform(x: float, y: float, lam: float, r: float) -> float:
+    def perform(x: float, y: float, lam_yes: float, lam_no: float, r: float) -> float:
         """ See default implementation in class AggregationFunction. """
         if x <= 0.5 and y <= 0.5:
-            return LukasiewiczAggregationFunctionV1._no_function(x, y, lam, r)
+            return LukasiewiczAggregationFunctionV1._no_function(x, y, lam_no, r)
         elif x <= 0.5 or y <= 0.5:
-            return LukasiewiczAggregationFunctionV1._maybe_function(x, y, lam, r)
+            return LukasiewiczAggregationFunctionV1._maybe_function(x, y, None, r)
         elif x >= 0.5 and y >= 0.5:
-            return LukasiewiczAggregationFunctionV1._yes_function(x, y, lam, r)
+            return LukasiewiczAggregationFunctionV1._yes_function(x, y, lam_yes, r)
 
     @staticmethod
     def _yes_function(x: float, y: float, lam: float, r: float = 1) -> float:
@@ -207,13 +227,13 @@ class LukasiewiczAggregationFunctionV1(AggregationFunction):
         return statistics.median([0, 1, value])
 
     @staticmethod
-    def get_marker(lam: float):
+    def get_marker(lam_yes: float, lam_no: float):
         """ See default implementation in class AggregationFunction. """
         x_no = [val/100 for val in range(0, 51)]
         x_yes = [val/100 for val in range(50, 101)]
 
-        y_yes = [((-x ** lam) + (0.5 ** lam) + 1) ** (1 / lam) for x in x_yes]
-        y_no = [((0.5 ** lam) - (x ** lam)) ** (1 / lam) for x in x_no]
+        y_yes = [1-(-((1-x) ** lam_yes) + (0.5 ** lam_yes)) ** (1 / lam_yes) for x in x_yes]
+        y_no = [((0.5 ** lam_no) - (x ** lam_no)) ** (1 / lam_no) for x in x_no]
 
         return x_yes, y_yes, x_no, y_no
 
