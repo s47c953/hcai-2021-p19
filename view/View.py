@@ -334,7 +334,7 @@ class View:
                 value = aggregation_function.perform(x / resolution, y / resolution, lam_yes, lam_no, r)
                 # add blue color to maybe points
                 if value != 0 and value != 1:
-                    blue_val = 44
+                    blue_val = 128
                 else:
                     blue_val = 00
 

@@ -203,7 +203,8 @@ class LukasiewiczAggregationFunctionV1(AggregationFunction):
 
     @staticmethod
     def _yes_function(x: float, y: float, lam: float, r: float = 1) -> float:
-        return min(1.0, ((x ** lam) + (y ** lam) - (0.5 ** lam))) ** (1 / lam)
+        # return min(1.0, ((x ** lam) + (y ** lam) - (0.5 ** lam))) ** (1 / lam)
+        return 1 - max( (1-x)**lam + (1-y)**lam - 0.5**lam, 0) ** (1 / lam)
 
     @staticmethod
     def _no_function(x: float, y: float, lam: float, r: float = 1) -> float:
